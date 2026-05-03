@@ -28,7 +28,7 @@ public class BuyerController {
         store.addToCart(book);
     }
 
-    public void removeFromCart(int bookId) {
+    public void removeFromCart(Long bookId) {
         store.removeFromCart(bookId);
     }
 

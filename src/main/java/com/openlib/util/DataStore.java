@@ -110,12 +110,12 @@ public class DataStore {
     }
 
     public void addBook(Book book) {
-        book.setId(books.size() + 1);
+        book.setId((long) (books.size() + 1));
         books.add(book);
     }
 
-    public boolean deleteBook(int bookId) {
-        return books.removeIf(b -> b.getId() == bookId);
+    public boolean deleteBook(Long bookId) {
+        return books.removeIf(b -> b.getId().equals(bookId));
     }
 
     public List<String> getCategories() {
@@ -134,15 +134,15 @@ public class DataStore {
 
     public void addToCart(Book book) {
         Optional<CartItem> existing = cart.stream()
-                .filter(c -> c.getBook().getId() == book.getId())
+                .filter(c -> c.getBook().getId().equals(book.getId()))
                 .findFirst();
         if (existing.isEmpty()) {
             cart.add(new CartItem(book));
         }
     }
 
-    public void removeFromCart(int bookId) {
-        cart.removeIf(c -> c.getBook().getId() == bookId);
+    public void removeFromCart(Long bookId) {
+        cart.removeIf(c -> c.getBook().getId().equals(bookId));
     }
 
     public void clearCart() { cart.clear(); }

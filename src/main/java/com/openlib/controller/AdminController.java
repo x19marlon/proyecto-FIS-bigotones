@@ -39,7 +39,7 @@ public class AdminController {
         return null;
     }
 
-    public boolean deleteBook(int bookId) {
+    public boolean deleteBook(Long bookId) {
         return store.deleteBook(bookId);
     }
 

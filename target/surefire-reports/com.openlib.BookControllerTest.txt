@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: com.openlib.BookControllerTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.681 s -- in com.openlib.BookControllerTest

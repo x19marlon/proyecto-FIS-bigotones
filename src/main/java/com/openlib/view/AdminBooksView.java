@@ -147,7 +147,7 @@ public class AdminBooksView {
         table.getStyleClass().add("table-view");
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
-        TableColumn<Book, Integer> idCol = new TableColumn<>("ID");
+        TableColumn<Book, Long> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         idCol.setMaxWidth(50);
 
