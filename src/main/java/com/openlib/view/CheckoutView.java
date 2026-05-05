@@ -96,6 +96,14 @@ public class CheckoutView {
         addrField.getStyleClass().add("input-field");
         addrField.setMaxWidth(Double.MAX_VALUE);
 
+        // Pre-fill data
+        com.openlib.model.User user = controller.getCurrentUser();
+        if (user != null) {
+            if (user.getName() != null) nameField.setText(user.getName());
+            if (user.getEmail() != null) emailField.setText(user.getEmail());
+            if (user.getAddress() != null) addrField.setText(user.getAddress());
+        }
+
         // Payment method
         Label payLbl = new Label("Método de pago");
         payLbl.getStyleClass().add("input-label");

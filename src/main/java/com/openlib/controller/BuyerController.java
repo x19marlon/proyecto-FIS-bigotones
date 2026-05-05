@@ -12,6 +12,10 @@ public class BuyerController {
 
     private final DataStore store = DataStore.getInstance();
 
+    public com.openlib.model.User getCurrentUser() {
+        return store.getCurrentUser();
+    }
+
     // ---- Catalog ----
 
     public List<Book> getBooks(String query, String category) {
