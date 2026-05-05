@@ -7,28 +7,31 @@ Este proyecto es una plataforma de mercado de libros que utiliza una arquitectur
 - **Frontend:** JavaFX, SceneBuilder, Java HTTP Client.
 - **Pruebas:** JUnit 5, MockMvc.
 
-## Notas / Pendientes
+## Notas pendientes / Funcionalidades por revisar
 
-### 1. Datos predeterminados del usuario para facturación
-- Cuando un usuario ya exista en el sistema, sus nombres y datos principales deben cargarse automáticamente para el recibo/factura al momento de comprar libros.
-- El correo usado para la factura debe ser el correo ya registrado en la cuenta del usuario, no uno ingresado manualmente en el formulario de checkout.
+A continuación se detallan las funcionalidades críticas e inconsistencias identificadas que deben ser abordadas en futuras iteraciones para garantizar un flujo de ecommerce robusto y profesional:
 
-### 2. Validación de direcciones
-- Falta implementar una restricción para diferenciar direcciones válidas y no válidas.
-- Se debe definir qué reglas se usarán para validar una dirección (ej: formato, existencia, restricciones geográficas) antes de permitir el envío.
+### 1. Autocompletado de datos para el recibo
+*   **Estado:** Pendiente de implementación.
+*   **Descripción:** El sistema debe autocompletar automáticamente la información del usuario autenticado (nombre, correo electrónico y datos de facturación) al momento de generar el comprobante de compra.
+*   **Objetivo:** Mejorar la experiencia de usuario (UX) evitando que deba ingresar manualmente información que la aplicación ya posee.
 
-### 3. Datos requeridos para envío
-- Revisar qué otros datos son necesarios para completar correctamente un envío de libros.
-- Determinar si hacen falta campos adicionales como:
-  - Ciudad y Departamento/Estado.
-  - Código postal.
-  - Teléfono de contacto.
-  - Dirección secundaria o referencias.
+### 2. Revisión de precios en el flujo de compra
+*   **Estado:** En revisión.
+*   **Descripción:** Se ha detectado una inconsistencia donde algunos libros aparecen como gratuitos en el catálogo pero generan un total superior a $0 en el checkout.
+*   **Objetivo:** Unificar la lógica de precios para que sea coherente en todos los estados: catálogo, carrito, checkout y recibo final.
+
+### 3. Historial de compras
+*   **Estado:** Pendiente de diseño y desarrollo.
+*   **Descripción:** Implementar una sección dentro del perfil del usuario que permita consultar adquisiciones previas.
+*   **Detalles necesarios:** Fecha de transacción, lista de libros, total pagado, estado del pedido y acceso al comprobante digital.
 
 ### 4. Descarga de libros
-- Falta implementar el feature para descargar libros mediante una URL única tras la compra.
-- Esta URL debe ser segura (ej: firmada o temporal), no fácilmente compartible, y estar estrictamente asociada a la compra o al usuario autorizado.
+*   **Estado:** Pendiente de implementación técnica.
+*   **Descripción:** Habilitar la descarga efectiva de los activos digitales tras la confirmación del pedido.
+*   **Seguridad:** Se requiere implementar validación de acceso, enlaces únicos/temporales y protección de la disponibilidad del archivo.
 
-### 5. Consistencia de precios en el UI
-- Se ha detectado que en algunas vistas los libros pueden aparecer con costo $0 o como "gratis", pero al llegar al checkout se calcula un costo total.
-- Es necesario asegurar que el precio mostrado en el catálogo sea consistente con el valor final cobrado en el pedido.
+### 5. Coherencia general del flujo de compra
+*   **Estado:** En mejora continua.
+*   **Descripción:** Asegurar que la trazabilidad del producto sea impecable desde el descubrimiento (catálogo) hasta el consumo (descarga).
+*   **Objetivo:** Garantizar que todos los módulos manejen los mismos estados de pago/gratuidad sin discrepancias visuales o lógicas.
