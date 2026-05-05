@@ -28,3 +28,7 @@ Este proyecto es una plataforma de mercado de libros que utiliza una arquitectur
 ### 4. Descarga de libros
 - Falta implementar el feature para descargar libros mediante una URL única tras la compra.
 - Esta URL debe ser segura (ej: firmada o temporal), no fácilmente compartible, y estar estrictamente asociada a la compra o al usuario autorizado.
+
+### 5. Consistencia de precios en el UI
+- Se ha detectado que en algunas vistas los libros pueden aparecer con costo $0 o como "gratis", pero al llegar al checkout se calcula un costo total.
+- Es necesario asegurar que el precio mostrado en el catálogo sea consistente con el valor final cobrado en el pedido.
