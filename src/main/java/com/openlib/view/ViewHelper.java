@@ -7,6 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import com.openlib.model.Book;
+import java.util.function.Consumer;
 
 public class ViewHelper {
 
@@ -103,5 +105,106 @@ public class ViewHelper {
         card.getStyleClass().add("card");
         card.setPadding(new Insets(padding));
         return card;
+    }
+
+    /** Professional Ecommerce Product Card */
+    public static VBox productCard(Book book, Consumer<Book> onAdd, Runnable onDetail) {
+        VBox card = new VBox(0);
+        card.getStyleClass().add("product-card");
+
+        // Top: Cover area
+        StackPane coverContainer = new StackPane();
+        coverContainer.getStyleClass().add("product-cover-container");
+        StackPane cover = bookCover(book.getCoverColor(), book.getTitle(), true);
+        coverContainer.getChildren().add(cover);
+
+        // Info area
+        VBox info = new VBox(8);
+        info.getStyleClass().add("product-info-container");
+
+        String categoryStr = book.getCategory() == null ? "GENERAL" : book.getCategory().toUpperCase();
+        Label cat = new Label(categoryStr);
+        cat.getStyleClass().add("product-badge");
+
+        // Status badge
+        if (book.getStatus() != null && !"APROBADO".equals(book.getStatus())) {
+            Label statusBadge = new Label(book.getStatus());
+            statusBadge.getStyleClass().add("badge-warn");
+            HBox badges = new HBox(6, cat, statusBadge);
+            info.getChildren().add(badges);
+        } else {
+            info.getChildren().add(cat);
+        }
+
+        String titleStr = book.getTitle() == null ? "Sin título" : book.getTitle();
+        Label title = new Label(titleStr);
+        title.getStyleClass().add("product-title");
+        title.setMinHeight(50);
+        title.setWrapText(true);
+
+        String authorStr = book.getAuthor() == null ? "Autor desconocido" : book.getAuthor();
+        Label author = new Label("por " + authorStr);
+        author.getStyleClass().add("product-author");
+
+        Label shortDesc = new Label("Material educativo de alta calidad disponible para descarga inmediata.");
+        shortDesc.getStyleClass().add("label-small");
+        shortDesc.setWrapText(true);
+        shortDesc.setMaxHeight(40);
+
+        HBox priceRow = new HBox(8);
+        priceRow.setAlignment(Pos.CENTER_LEFT);
+        Label price = new Label("GRATIS");
+        price.getStyleClass().add("product-price");
+        priceRow.getChildren().addAll(price, spacer(), starRating(4.5));
+
+        Button btnAdd = new Button("Agregar al carrito");
+        btnAdd.getStyleClass().add("btn-accent");
+        btnAdd.setMaxWidth(Double.MAX_VALUE);
+        btnAdd.setPrefHeight(40);
+        btnAdd.setOnAction(e -> onAdd.accept(book));
+
+        Button btnDetail = new Button("Ver detalle");
+        btnDetail.getStyleClass().add("btn-secondary");
+        btnDetail.setMaxWidth(Double.MAX_VALUE);
+        btnDetail.setOnAction(e -> onDetail.run());
+
+        info.getChildren().addAll(title, author, shortDesc, priceRow, btnAdd, btnDetail);
+        card.getChildren().addAll(coverContainer, info);
+
+        return card;
+    }
+
+    public static Label categoryChip(String text, boolean active) {
+        Label l = new Label(text);
+        l.getStyleClass().add("chip");
+        if (active) l.getStyleClass().add("chip-active");
+        return l;
+    }
+
+    /** Professional Pagination Button */
+    public static Button paginationBtn(String text, boolean disabled, Runnable action) {
+        Button btn = new Button(text);
+        btn.getStyleClass().add("pagination-btn");
+        btn.setDisable(disabled);
+        btn.setOnAction(e -> action.run());
+        return btn;
+    }
+
+    /** Generic state view (Empty, Loading, Error) */
+    public static VBox stateView(String icon, String title, String subtitle) {
+        VBox box = new VBox(12);
+        box.getStyleClass().add("state-container");
+        
+        Label lblIcon = new Label(icon);
+        lblIcon.getStyleClass().add("state-icon");
+        
+        Label lblTitle = new Label(title);
+        lblTitle.getStyleClass().add("label-h2");
+        
+        Label lblSub = new Label(subtitle);
+        lblSub.getStyleClass().add("label-body");
+        
+        box.getChildren().addAll(lblIcon, lblTitle, lblSub);
+        return box;
     }
 }

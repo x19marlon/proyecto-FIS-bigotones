@@ -43,7 +43,7 @@ public class DataStore {
     private void seedData() {
         // Users
         users.add(new User(1L, "Admin OpenLib", "admin@openlib.com", "admin123", "ADMIN"));
-        users.add(new User(2L, "Danna García", "danna@javeriana.edu.co", "buyer123", "BUYER"));
+        users.add(new User(2L, "a", "a@test.co", "000000", "BUYER"));
         users.add(new User(3L, "Carlos Ramírez", "carlos@javeriana.edu.co", "buyer123", "BUYER"));
 
         // Books
@@ -104,12 +104,17 @@ public class DataStore {
         String q = query == null ? "" : query.toLowerCase().trim();
         return books.stream()
                 .filter(b -> {
+                    String title = b.getTitle() == null ? "" : b.getTitle().toLowerCase();
+                    String author = b.getAuthor() == null ? "" : b.getAuthor().toLowerCase();
+                    String isbn = b.getIsbn() == null ? "" : b.getIsbn();
+                    String bCat = b.getCategory() == null ? "" : b.getCategory();
+
                     boolean matchQ = q.isEmpty()
-                            || b.getTitle().toLowerCase().contains(q)
-                            || b.getAuthor().toLowerCase().contains(q)
-                            || b.getIsbn().contains(q);
+                            || title.contains(q)
+                            || author.contains(q)
+                            || isbn.contains(q);
                     boolean matchCat = category == null || category.equals("Todas")
-                            || b.getCategory().equals(category);
+                            || bCat.equals(category);
                     return matchQ && matchCat;
                 })
                 .collect(Collectors.toList());

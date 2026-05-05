@@ -3,6 +3,7 @@ package com.openlib.view;
 import com.openlib.controller.BuyerController;
 import com.openlib.model.Book;
 import com.openlib.util.DataStore;
+import com.openlib.util.SceneManager;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -17,6 +18,13 @@ public class BuyerDashboardView {
     private FlowPane booksGrid;
     private TextField searchField;
     private ComboBox<String> categoryCombo;
+    private ComboBox<String> sortCombo;
+    private ComboBox<Integer> pageSizeCombo;
+    private HBox paginationFooter;
+    
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private List<Book> cachedBooks = new java.util.ArrayList<>();
 
     public Scene buildScene() {
         BorderPane root = new BorderPane();
@@ -66,115 +74,262 @@ public class BuyerDashboardView {
         VBox content = new VBox(0);
         content.getStyleClass().add("pane-root");
 
-        // Top bar
-        HBox topbar = new HBox(12);
-        topbar.getStyleClass().add("topbar");
-        topbar.setAlignment(Pos.CENTER_LEFT);
-        Label title = new Label("Catálogo de Libros");
-        title.getStyleClass().add("topbar-title");
+        // Hero Section
+        VBox hero = new VBox(12);
+        hero.getStyleClass().add("hero-section");
+        Label heroTitle = new Label("Explora nuestra biblioteca académica");
+        heroTitle.getStyleClass().add("hero-title");
+        Label heroSub = new Label("Encuentra los mejores recursos digitales para potenciar tu aprendizaje.");
+        heroSub.getStyleClass().add("hero-subtitle");
+        hero.getChildren().addAll(heroTitle, heroSub);
+
+        // Control Bar (Filters & Search)
+        HBox controlBar = new HBox(16);
+        controlBar.getStyleClass().add("control-bar");
 
         searchField = new TextField();
-        searchField.setPromptText("🔍  Buscar por título, autor, ISBN...");
+        searchField.setPromptText("Buscar por título, autor o ISBN...");
         searchField.getStyleClass().add("input-field");
-        searchField.setPrefWidth(300);
+        searchField.setPrefWidth(400);
 
+        HBox chips = new HBox(10);
+        chips.setAlignment(Pos.CENTER_LEFT);
+        String currentCat = categoryCombo == null ? "Todas" : categoryCombo.getValue();
+        for (String cat : controller.getCategories()) {
+            Label chip = ViewHelper.categoryChip(cat, cat.equals(currentCat));
+            chip.setOnMouseClicked(e -> {
+                categoryCombo.setValue(cat);
+                refreshBooks(searchField.getText(), cat);
+            });
+            chips.getChildren().add(chip);
+        }
+
+        // Hidden combo for logic compatibility
         categoryCombo = new ComboBox<>();
         categoryCombo.getItems().addAll(controller.getCategories());
         categoryCombo.setValue("Todas");
-        categoryCombo.getStyleClass().add("combo-field");
-        categoryCombo.setPrefWidth(150);
+        categoryCombo.setVisible(false);
+        categoryCombo.setManaged(false);
 
-        Button searchBtn = new Button("Buscar");
-        searchBtn.getStyleClass().add("btn-secondary");
+        // Sort Combo
+        sortCombo = new ComboBox<>();
+        sortCombo.getItems().addAll("Más recientes", "Título (A-Z)", "Título (Z-A)");
+        sortCombo.setValue("Más recientes");
+        sortCombo.getStyleClass().add("combo-field");
+        sortCombo.setPrefWidth(180);
+        sortCombo.setOnAction(e -> applyFilters());
 
-        Runnable doSearch = () -> refreshBooks(
-                searchField.getText(), categoryCombo.getValue());
-        searchBtn.setOnAction(e -> doSearch.run());
-        searchField.setOnAction(e -> doSearch.run());
-        categoryCombo.setOnAction(e -> doSearch.run());
+        controlBar.getChildren().addAll(searchField, chips, ViewHelper.spacer(), sortCombo, categoryCombo);
 
-        topbar.getChildren().addAll(title, ViewHelper.spacer(),
-                searchField, categoryCombo, searchBtn);
+        searchField.setOnAction(e -> applyFilters());
+
 
         // Books grid
         booksGrid = new FlowPane();
-        booksGrid.setHgap(20);
-        booksGrid.setVgap(20);
+        booksGrid.setHgap(30);
+        booksGrid.setVgap(30);
         booksGrid.setPadding(new Insets(32));
-        // Use css class
         booksGrid.getStyleClass().add("pane-root");
+        booksGrid.setAlignment(Pos.TOP_LEFT);
 
         ScrollPane scroll = new ScrollPane(booksGrid);
         scroll.setFitToWidth(true);
         scroll.getStyleClass().add("scroll-pane-transparent");
         VBox.setVgrow(scroll, Priority.ALWAYS);
 
-        content.getChildren().addAll(topbar, scroll);
-        refreshBooks("", "Todas");
+        // Pagination Footer
+        paginationFooter = new HBox();
+        paginationFooter.getStyleClass().add("pagination-container");
+
+        content.getChildren().addAll(hero, controlBar, scroll, paginationFooter);
+        applyFilters();
         return content;
     }
 
+    private void applyFilters() {
+        currentPage = 1;
+        refreshBooks(searchField.getText(), categoryCombo.getValue());
+    }
+
     private void refreshBooks(String query, String category) {
-        booksGrid.getChildren().clear();
-        List<Book> books = controller.getBooks(query, category);
+        try {
+            cachedBooks = new java.util.ArrayList<>(controller.getBooks(query, category));
+            
+            // Sorting logic (Frontend)
+            String sort = sortCombo.getValue();
+            if (sort != null) {
+                if (sort.contains("Título (A-Z)")) {
+                    cachedBooks.sort((a, b) -> {
+                        String t1 = a.getTitle() == null ? "" : a.getTitle();
+                        String t2 = b.getTitle() == null ? "" : b.getTitle();
+                        return t1.compareToIgnoreCase(t2);
+                    });
+                } else if (sort.contains("Título (Z-A)")) {
+                    cachedBooks.sort((a, b) -> {
+                        String t1 = a.getTitle() == null ? "" : a.getTitle();
+                        String t2 = b.getTitle() == null ? "" : b.getTitle();
+                        return t2.compareToIgnoreCase(t1);
+                    });
+                }
+            }
 
-        if (books.isEmpty()) {
-            VBox emptyBox = new VBox(12);
-            emptyBox.setAlignment(Pos.CENTER);
-            emptyBox.setPadding(new Insets(60));
-            Label icon = new Label("📚");
-            icon.setStyle("-fx-font-size: 48px;");
-            Label empty = new Label("No se encontraron libros.");
-            empty.getStyleClass().add("label-h2");
-            Label subEmpty = new Label("Intenta con otros términos de búsqueda o categoría.");
-            subEmpty.getStyleClass().add("label-body");
-            emptyBox.getChildren().addAll(icon, empty, subEmpty);
-            booksGrid.getChildren().add(emptyBox);
-            return;
-        }
-
-        for (Book book : books) {
-            booksGrid.getChildren().add(buildBookCard(book));
+            renderCurrentPage();
+        } catch (Exception e) {
+            e.printStackTrace(); // Crucial for debugging
+            booksGrid.getChildren().clear();
+            booksGrid.getChildren().add(ViewHelper.stateView("⚠️", 
+                "Error al cargar el catálogo", 
+                "Hubo un problema inesperado. Por favor intenta de nuevo."));
+            paginationFooter.setVisible(false);
         }
     }
 
-    private VBox buildBookCard(Book book) {
-        VBox card = new VBox(10);
-        card.getStyleClass().add("card");
-        card.setPadding(new Insets(16));
-        card.setPrefWidth(220);
-        card.setMaxWidth(220);
+    private void renderCurrentPage() {
+        booksGrid.getChildren().clear();
+        
+        if (cachedBooks.isEmpty()) {
+            booksGrid.getChildren().add(ViewHelper.stateView("🔍", 
+                "No encontramos resultados", 
+                "Intenta ajustar tus filtros o buscar algo diferente."));
+            paginationFooter.setVisible(false);
+            return;
+        }
 
-        StackPane cover = ViewHelper.bookCover(book.getCoverColor(), book.getTitle(), false);
+        paginationFooter.setVisible(true);
+        
+        int total = cachedBooks.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        
+        // Safety check for current page
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
 
-        Label titleLbl = new Label(book.getTitle());
-        titleLbl.getStyleClass().add("label-title");
-        titleLbl.setWrapText(true);
+        int fromIndex = (currentPage - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, total);
+        
+        List<Book> pageItems = cachedBooks.subList(fromIndex, toIndex);
 
-        Label authorLbl = new Label(book.getAuthor());
-        authorLbl.getStyleClass().add("label-small");
+        for (Book book : pageItems) {
+            VBox card = ViewHelper.productCard(
+                    book,
+                    b -> {
+                        controller.addToCart(b);
+                        SceneManager.getInstance().showBuyerDashboard();
+                    },
+                    () -> showBookDetail(book)
+            );
+            booksGrid.getChildren().add(card);
+        }
 
-        HBox meta = new HBox(8);
-        meta.setAlignment(Pos.CENTER_LEFT);
-        Label catBadge = new Label(book.getCategory());
-        catBadge.getStyleClass().add("badge");
+        updatePaginationUI(totalPages, total, fromIndex + 1, toIndex);
+    }
 
-        Label dlLbl = new Label("⬇ " + book.getDownloads());
-        dlLbl.getStyleClass().add("label-small");
-        meta.getChildren().addAll(catBadge, dlLbl);
+    private void updatePaginationUI(int totalPages, int totalResults, int start, int end) {
+        paginationFooter.getChildren().clear();
 
-        Label freeLbl = ViewHelper.freeBadge();
+        Label resultsLbl = new Label(String.format("Mostrando %d–%d de %d libros", start, end, totalResults));
+        resultsLbl.getStyleClass().add("results-counter");
 
-        Button addBtn = new Button("+ Agregar al carrito");
-        addBtn.getStyleClass().add("btn-primary");
-        addBtn.setMaxWidth(Double.MAX_VALUE);
-        addBtn.setOnAction(e -> {
-            controller.addToCart(book);
-            addBtn.setText("✓ Agregado");
-            addBtn.setDisable(true);
+        Button btnPrev = ViewHelper.paginationBtn("← Anterior", currentPage <= 1, () -> {
+            currentPage--;
+            renderCurrentPage();
         });
 
-        card.getChildren().addAll(cover, titleLbl, authorLbl, meta, freeLbl, addBtn);
-        return card;
+        Label pageInfo = new Label(String.format("Página %d de %d", currentPage, totalPages));
+        pageInfo.getStyleClass().add("pagination-info");
+
+        Button btnNext = ViewHelper.paginationBtn("Siguiente →", currentPage >= totalPages, () -> {
+            currentPage++;
+            renderCurrentPage();
+        });
+
+        Label sizeLbl = new Label("Libros por página:");
+        sizeLbl.getStyleClass().add("results-counter");
+        
+        pageSizeCombo = new ComboBox<>();
+        pageSizeCombo.getItems().addAll(5, 10, 20, 30);
+        pageSizeCombo.setValue(pageSize);
+        pageSizeCombo.getStyleClass().add("combo-field");
+        pageSizeCombo.setPrefWidth(80);
+        pageSizeCombo.setOnAction(e -> {
+            pageSize = pageSizeCombo.getValue();
+            currentPage = 1;
+            renderCurrentPage();
+        });
+
+        paginationFooter.getChildren().addAll(
+                resultsLbl, ViewHelper.spacer(), 
+                btnPrev, pageInfo, btnNext, 
+                ViewHelper.spacer(), 
+                sizeLbl, pageSizeCombo
+        );
+    }
+
+    private void showBookDetail(Book book) {
+        // Simple detail overlay
+        Dialog<Void> dialog = new Dialog<>();
+        dialog.setTitle("Detalle del Libro");
+        DialogPane pane = dialog.getDialogPane();
+        pane.getStylesheets().add(ViewHelper.CSS_PATH);
+        pane.getStyleClass().add("pane-root");
+        
+        HBox content = new HBox(30);
+        content.setPadding(new Insets(30));
+        content.setPrefWidth(700);
+
+        StackPane cover = ViewHelper.bookCover(book.getCoverColor(), book.getTitle(), true);
+        cover.setScaleX(1.5);
+        cover.setScaleY(1.5);
+        StackPane coverWrapper = new StackPane(cover);
+        coverWrapper.setPadding(new Insets(40));
+
+        VBox info = new VBox(15);
+        String categoryStr = book.getCategory() == null ? "GENERAL" : book.getCategory().toUpperCase();
+        Label cat = new Label(categoryStr);
+        cat.getStyleClass().add("product-badge");
+
+        // Status badge
+        if (book.getStatus() != null && !"APROBADO".equals(book.getStatus())) {
+            Label statusBadge = new Label(book.getStatus());
+            statusBadge.getStyleClass().add("badge-warn");
+            HBox badges = new HBox(6, cat, statusBadge);
+            info.getChildren().add(badges);
+        } else {
+            info.getChildren().add(cat);
+        }
+
+        String titleStr = book.getTitle() == null ? "Sin título" : book.getTitle();
+        Label title = new Label(titleStr);
+        title.getStyleClass().add("label-h1");
+        title.setWrapText(true);
+
+        Label author = new Label("Autor: " + book.getAuthor());
+        author.getStyleClass().add("label-h2");
+
+        Label desc = new Label("Esta es una descripción detallada del libro académico. "
+                + "Aquí se incluirían los objetivos de aprendizaje, el resumen del contenido y "
+                + "la relevancia del material para el curso.");
+        desc.getStyleClass().add("label-body");
+        desc.setWrapText(true);
+
+        Label isbn = new Label("ISBN: " + (book.getIsbn() != null ? book.getIsbn() : "N/A"));
+        isbn.getStyleClass().add("label-small");
+
+        Button addBtn = new Button("Comprar ahora - GRATIS");
+        addBtn.getStyleClass().add("btn-accent");
+        addBtn.setPrefWidth(300);
+        addBtn.setPrefHeight(50);
+        addBtn.setOnAction(e -> {
+            controller.addToCart(book);
+            dialog.close();
+            SceneManager.getInstance().showBuyerDashboard();
+        });
+
+        info.getChildren().addAll(title, author, desc, isbn, ViewHelper.vSpacer(), addBtn);
+        content.getChildren().addAll(coverWrapper, info);
+
+        pane.setContent(content);
+        pane.getButtonTypes().add(ButtonType.CLOSE);
+        dialog.showAndWait();
     }
 }

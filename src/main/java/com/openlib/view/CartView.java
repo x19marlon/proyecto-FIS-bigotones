@@ -147,18 +147,24 @@ public class CartView {
         StackPane cover = ViewHelper.bookCover(item.getBook().getCoverColor(),
                 item.getBook().getTitle(), false);
 
-        VBox info = new VBox(4);
+        VBox info = new VBox(6);
         HBox.setHgrow(info, Priority.ALWAYS);
-        Label titleLbl = new Label(item.getBook().getTitle());
-        titleLbl.getStyleClass().add("label-title");
-        Label authorLbl = new Label(item.getBook().getAuthor());
-        authorLbl.getStyleClass().add("label-body");
-        Label catLbl = new Label(item.getBook().getCategory());
-        catLbl.getStyleClass().add("badge");
-        info.getChildren().addAll(titleLbl, authorLbl, catLbl);
+        String titleStr = item.getBook().getTitle() == null ? "Sin título" : item.getBook().getTitle();
+        Label titleLbl = new Label(titleStr);
+        titleLbl.getStyleClass().add("product-title");
+
+        String authorStr = item.getBook().getAuthor() == null ? "Autor desconocido" : item.getBook().getAuthor();
+        Label authorLbl = new Label("por " + authorStr);
+        authorLbl.getStyleClass().add("product-author");
+        
+        String categoryStr = item.getBook().getCategory() == null ? "GENERAL" : item.getBook().getCategory().toUpperCase();
+        Label catLbl = new Label(categoryStr);
+        catLbl.getStyleClass().add("product-badge");
+        
+        info.getChildren().addAll(catLbl, titleLbl, authorLbl);
 
         Label price = new Label("GRATIS");
-        price.setStyle("-fx-text-fill: #2F5D62; -fx-font-weight: bold; -fx-font-size: 15px;");
+        price.getStyleClass().add("product-price");
 
         Button removeBtn = new Button("Quitar");
         removeBtn.getStyleClass().add("btn-danger");
