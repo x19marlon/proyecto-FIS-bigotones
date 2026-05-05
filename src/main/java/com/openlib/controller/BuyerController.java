@@ -22,6 +22,15 @@ public class BuyerController {
         return store.getCategories();
     }
 
+    /**
+     * Placeholder for future backend pagination.
+     * TODO: Implement server-side pagination once the API supports 'page' and 'size' parameters.
+     */
+    public List<Book> getBooksPaginated(String query, String category, int page, int size) {
+        // Current implementation still relies on frontend slicing
+        return getBooks(query, category);
+    }
+
     // ---- Cart ----
 
     public void addToCart(Book book) {

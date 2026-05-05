@@ -18,6 +18,13 @@ public class BuyerDashboardView {
     private FlowPane booksGrid;
     private TextField searchField;
     private ComboBox<String> categoryCombo;
+    private ComboBox<String> sortCombo;
+    private ComboBox<Integer> pageSizeCombo;
+    private HBox paginationFooter;
+    
+    private int currentPage = 1;
+    private int pageSize = 10;
+    private List<Book> cachedBooks = new java.util.ArrayList<>();
 
     public Scene buildScene() {
         BorderPane root = new BorderPane();
@@ -104,9 +111,18 @@ public class BuyerDashboardView {
         categoryCombo.setVisible(false);
         categoryCombo.setManaged(false);
 
-        controlBar.getChildren().addAll(searchField, chips, ViewHelper.spacer(), categoryCombo);
+        // Sort Combo
+        sortCombo = new ComboBox<>();
+        sortCombo.getItems().addAll("Más recientes", "Título (A-Z)", "Título (Z-A)");
+        sortCombo.setValue("Más recientes");
+        sortCombo.getStyleClass().add("combo-field");
+        sortCombo.setPrefWidth(180);
+        sortCombo.setOnAction(e -> applyFilters());
 
-        searchField.setOnAction(e -> refreshBooks(searchField.getText(), categoryCombo.getValue()));
+        controlBar.getChildren().addAll(searchField, chips, ViewHelper.spacer(), sortCombo, categoryCombo);
+
+        searchField.setOnAction(e -> applyFilters());
+
 
         // Books grid
         booksGrid = new FlowPane();
@@ -121,41 +137,116 @@ public class BuyerDashboardView {
         scroll.getStyleClass().add("scroll-pane-transparent");
         VBox.setVgrow(scroll, Priority.ALWAYS);
 
-        content.getChildren().addAll(hero, controlBar, scroll);
-        refreshBooks("", "Todas");
+        // Pagination Footer
+        paginationFooter = new HBox();
+        paginationFooter.getStyleClass().add("pagination-container");
+
+        content.getChildren().addAll(hero, controlBar, scroll, paginationFooter);
+        applyFilters();
         return content;
     }
 
-    private void refreshBooks(String query, String category) {
-        booksGrid.getChildren().clear();
-        List<Book> books = controller.getBooks(query, category);
+    private void applyFilters() {
+        currentPage = 1;
+        refreshBooks(searchField.getText(), categoryCombo.getValue());
+    }
 
-        if (books.isEmpty()) {
-            VBox emptyBox = new VBox(12);
-            emptyBox.setAlignment(Pos.CENTER);
-            emptyBox.setPadding(new Insets(100));
-            Label icon = new Label("🔍");
-            icon.setStyle("-fx-font-size: 64px;");
-            Label empty = new Label("No encontramos resultados");
-            empty.getStyleClass().add("label-h2");
-            Label subEmpty = new Label("Intenta ajustar tus filtros o buscar algo diferente.");
-            subEmpty.getStyleClass().add("label-body");
-            emptyBox.getChildren().addAll(icon, empty, subEmpty);
-            booksGrid.getChildren().add(emptyBox);
+    private void refreshBooks(String query, String category) {
+        // TODO: In the future, this should call controller.getBooksPaginated(query, category, currentPage, pageSize)
+        // to avoid loading all books into memory.
+        cachedBooks = controller.getBooks(query, category);
+        
+        // Sorting logic (Frontend)
+        String sort = sortCombo.getValue();
+        if (sort.contains("Título (A-Z)")) {
+            cachedBooks.sort((a, b) -> a.getTitle().compareToIgnoreCase(b.getTitle()));
+        } else if (sort.contains("Título (Z-A)")) {
+            cachedBooks.sort((a, b) -> b.getTitle().compareToIgnoreCase(a.getTitle()));
+        }
+        // "Más recientes" is default (usually insertion order in our store)
+
+        renderCurrentPage();
+    }
+
+    private void renderCurrentPage() {
+        booksGrid.getChildren().clear();
+        
+        if (cachedBooks.isEmpty()) {
+            booksGrid.getChildren().add(ViewHelper.stateView("🔍", 
+                "No encontramos resultados", 
+                "Intenta ajustar tus filtros o buscar algo diferente."));
+            paginationFooter.setVisible(false);
             return;
         }
 
-        for (Book book : books) {
+        paginationFooter.setVisible(true);
+        
+        int total = cachedBooks.size();
+        int totalPages = (int) Math.ceil((double) total / pageSize);
+        
+        // Safety check for current page
+        if (currentPage > totalPages) currentPage = totalPages;
+        if (currentPage < 1) currentPage = 1;
+
+        int fromIndex = (currentPage - 1) * pageSize;
+        int toIndex = Math.min(fromIndex + pageSize, total);
+        
+        List<Book> pageItems = cachedBooks.subList(fromIndex, toIndex);
+
+        for (Book book : pageItems) {
             VBox card = ViewHelper.productCard(
                     book,
                     b -> {
                         controller.addToCart(b);
-                        SceneManager.getInstance().showBuyerDashboard(); // refresh to update cart badge
+                        SceneManager.getInstance().showBuyerDashboard();
                     },
                     () -> showBookDetail(book)
             );
             booksGrid.getChildren().add(card);
         }
+
+        updatePaginationUI(totalPages, total, fromIndex + 1, toIndex);
+    }
+
+    private void updatePaginationUI(int totalPages, int totalResults, int start, int end) {
+        paginationFooter.getChildren().clear();
+
+        Label resultsLbl = new Label(String.format("Mostrando %d–%d de %d libros", start, end, totalResults));
+        resultsLbl.getStyleClass().add("results-counter");
+
+        Button btnPrev = ViewHelper.paginationBtn("← Anterior", currentPage <= 1, () -> {
+            currentPage--;
+            renderCurrentPage();
+        });
+
+        Label pageInfo = new Label(String.format("Página %d de %d", currentPage, totalPages));
+        pageInfo.getStyleClass().add("pagination-info");
+
+        Button btnNext = ViewHelper.paginationBtn("Siguiente →", currentPage >= totalPages, () -> {
+            currentPage++;
+            renderCurrentPage();
+        });
+
+        Label sizeLbl = new Label("Libros por página:");
+        sizeLbl.getStyleClass().add("results-counter");
+        
+        pageSizeCombo = new ComboBox<>();
+        pageSizeCombo.getItems().addAll(5, 10, 20, 30);
+        pageSizeCombo.setValue(pageSize);
+        pageSizeCombo.getStyleClass().add("combo-field");
+        pageSizeCombo.setPrefWidth(80);
+        pageSizeCombo.setOnAction(e -> {
+            pageSize = pageSizeCombo.getValue();
+            currentPage = 1;
+            renderCurrentPage();
+        });
+
+        paginationFooter.getChildren().addAll(
+                resultsLbl, ViewHelper.spacer(), 
+                btnPrev, pageInfo, btnNext, 
+                ViewHelper.spacer(), 
+                sizeLbl, pageSizeCombo
+        );
     }
 
     private void showBookDetail(Book book) {

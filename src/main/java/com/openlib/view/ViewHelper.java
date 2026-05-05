@@ -133,6 +133,11 @@ public class ViewHelper {
         Label author = new Label("por " + book.getAuthor());
         author.getStyleClass().add("product-author");
 
+        Label shortDesc = new Label("Material educativo de alta calidad disponible para descarga inmediata.");
+        shortDesc.getStyleClass().add("label-small");
+        shortDesc.setWrapText(true);
+        shortDesc.setMaxHeight(40);
+
         HBox priceRow = new HBox(8);
         priceRow.setAlignment(Pos.CENTER_LEFT);
         Label price = new Label("GRATIS");
@@ -150,7 +155,7 @@ public class ViewHelper {
         btnDetail.setMaxWidth(Double.MAX_VALUE);
         btnDetail.setOnAction(e -> onDetail.run());
 
-        info.getChildren().addAll(cat, title, author, priceRow, btnAdd, btnDetail);
+        info.getChildren().addAll(cat, title, author, shortDesc, priceRow, btnAdd, btnDetail);
         card.getChildren().addAll(coverContainer, info);
 
         return card;
@@ -161,5 +166,32 @@ public class ViewHelper {
         l.getStyleClass().add("chip");
         if (active) l.getStyleClass().add("chip-active");
         return l;
+    }
+
+    /** Professional Pagination Button */
+    public static Button paginationBtn(String text, boolean disabled, Runnable action) {
+        Button btn = new Button(text);
+        btn.getStyleClass().add("pagination-btn");
+        btn.setDisable(disabled);
+        btn.setOnAction(e -> action.run());
+        return btn;
+    }
+
+    /** Generic state view (Empty, Loading, Error) */
+    public static VBox stateView(String icon, String title, String subtitle) {
+        VBox box = new VBox(12);
+        box.getStyleClass().add("state-container");
+        
+        Label lblIcon = new Label(icon);
+        lblIcon.getStyleClass().add("state-icon");
+        
+        Label lblTitle = new Label(title);
+        lblTitle.getStyleClass().add("label-h2");
+        
+        Label lblSub = new Label(subtitle);
+        lblSub.getStyleClass().add("label-body");
+        
+        box.getChildren().addAll(lblIcon, lblTitle, lblSub);
+        return box;
     }
 }
