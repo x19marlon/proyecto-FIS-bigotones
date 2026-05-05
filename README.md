@@ -35,6 +35,7 @@ El desarrollo de OpenLib Market se centra en los siguientes pilares:
 *   **Autocompletado de Datos:** Carga automática de perfiles de usuario en el checkout para agilizar el proceso.
 *   **Historial de Compras:** Sección dedicada para que el usuario consulte sus transacciones y acceda a sus comprobantes.
 *   **Descarga Segura:** Implementación de acceso a archivos mediante URLs únicas y temporales.
+*   **Filtrado por Categorías:** Corregir la funcionalidad de búsqueda por categorías en el catálogo, la cual se encuentra actualmente inactiva.
 *   **Paginación del Lado del Servidor:** Optimización del catálogo para soportar miles de registros sin degradación de rendimiento.
 *   **Validación Avanzada de Datos:** Refinamiento de las reglas de negocio para facturación y estados de pedido.
 
