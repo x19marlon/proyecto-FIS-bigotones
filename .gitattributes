@@ -1,0 +1,10 @@
+# Linguist overrides
+# Ignore specific folders from language statistics
+DOC/* linguist-documentation
+target/* linguist-vendored
+.venv/* linguist-vendored
+
+# Force identification of Java
+*.java linguist-language=Java
+*.css linguist-language=CSS
+*.fxml linguist-language=XML
