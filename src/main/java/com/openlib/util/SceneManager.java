@@ -21,6 +21,7 @@ public class SceneManager {
         stage.setTitle("OpenLib Market");
         stage.setMinWidth(1100);
         stage.setMinHeight(720);
+        stage.setFullScreen(true);
     }
 
     public Stage getStage() { return primaryStage; }

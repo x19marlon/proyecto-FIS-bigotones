@@ -134,7 +134,7 @@ public class CheckoutView {
             t.setWrapText(true);
             HBox.setHgrow(t, Priority.ALWAYS);
             Label p = new Label("GRATIS");
-            p.setStyle("-fx-text-fill: #2F5D62; -fx-font-weight: bold; -fx-font-size: 13px;");
+            p.getStyleClass().add("product-price");
             row.getChildren().addAll(t, p);
             summaryCard.getChildren().add(row);
         }

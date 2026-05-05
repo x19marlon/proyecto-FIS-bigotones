@@ -108,29 +108,27 @@ public class LibraryView {
                 Separator sep = new Separator();
                 sep.getStyleClass().add("separator-light");
 
-                FlowPane booksFlow = new FlowPane(12, 8);
+                FlowPane booksFlow = new FlowPane(12, 12);
                 for (com.openlib.model.OrderItem item : order.getItems()) {
-                    HBox bookRow = new HBox(10);
-                    bookRow.setAlignment(Pos.CENTER_LEFT);
-                    bookRow.setStyle("-fx-background-color: #EDE3D2; -fx-background-radius: 6; -fx-padding: 10 14;");
+                    VBox assetBox = new VBox(10);
+                    assetBox.setAlignment(Pos.TOP_LEFT);
+                    assetBox.setStyle("-fx-background-color: #EDE3D2; -fx-background-radius: 12; -fx-padding: 16; -fx-pref-width: 200;");
 
                     StackPane cover = ViewHelper.bookCover(item.getBook().getCoverColor(),
                             item.getBook().getTitle(), false);
-                    cover.setScaleX(0.6); cover.setScaleY(0.6);
 
-                    VBox info = new VBox(3);
                     Label tLbl = new Label(item.getBook().getTitle());
                     tLbl.getStyleClass().add("label-title");
-                    Label aLbl = new Label(item.getBook().getAuthor());
-                    aLbl.getStyleClass().add("label-small");
+                    tLbl.setWrapText(true);
+                    tLbl.setMaxWidth(170);
 
-                    Button dlBtn = new Button("⬇ Descargar");
-                    dlBtn.getStyleClass().add("btn-icon");
+                    Button dlBtn = new Button("⬇ Descargar PDF");
+                    dlBtn.getStyleClass().add("btn-accent");
+                    dlBtn.setMaxWidth(Double.MAX_VALUE);
                     dlBtn.setOnAction(ev -> showDownloadDialog(item.getBook().getTitle()));
 
-                    info.getChildren().addAll(tLbl, aLbl);
-                    bookRow.getChildren().addAll(cover, info, dlBtn);
-                    booksFlow.getChildren().add(bookRow);
+                    assetBox.getChildren().addAll(cover, tLbl, ViewHelper.vSpacer(), dlBtn);
+                    booksFlow.getChildren().add(assetBox);
                 }
 
                 orderCard.getChildren().addAll(orderHeader, sep, booksFlow);

@@ -7,6 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import com.openlib.model.Book;
+import java.util.function.Consumer;
 
 public class ViewHelper {
 
@@ -103,5 +105,61 @@ public class ViewHelper {
         card.getStyleClass().add("card");
         card.setPadding(new Insets(padding));
         return card;
+    }
+
+    /** Professional Ecommerce Product Card */
+    public static VBox productCard(Book book, Consumer<Book> onAdd, Runnable onDetail) {
+        VBox card = new VBox(0);
+        card.getStyleClass().add("product-card");
+
+        // Top: Cover area
+        StackPane coverContainer = new StackPane();
+        coverContainer.getStyleClass().add("product-cover-container");
+        StackPane cover = bookCover(book.getCoverColor(), book.getTitle(), true);
+        coverContainer.getChildren().add(cover);
+
+        // Info area
+        VBox info = new VBox(8);
+        info.getStyleClass().add("product-info-container");
+
+        Label cat = new Label(book.getCategory().toUpperCase());
+        cat.getStyleClass().add("product-badge");
+
+        Label title = new Label(book.getTitle());
+        title.getStyleClass().add("product-title");
+        title.setMinHeight(50);
+        title.setAlignment(Pos.TOP_LEFT);
+
+        Label author = new Label("por " + book.getAuthor());
+        author.getStyleClass().add("product-author");
+
+        HBox priceRow = new HBox(8);
+        priceRow.setAlignment(Pos.CENTER_LEFT);
+        Label price = new Label("GRATIS");
+        price.getStyleClass().add("product-price");
+        priceRow.getChildren().addAll(price, spacer(), starRating(4.5));
+
+        Button btnAdd = new Button("Agregar al carrito");
+        btnAdd.getStyleClass().add("btn-accent");
+        btnAdd.setMaxWidth(Double.MAX_VALUE);
+        btnAdd.setPrefHeight(40);
+        btnAdd.setOnAction(e -> onAdd.accept(book));
+
+        Button btnDetail = new Button("Ver detalle");
+        btnDetail.getStyleClass().add("btn-secondary");
+        btnDetail.setMaxWidth(Double.MAX_VALUE);
+        btnDetail.setOnAction(e -> onDetail.run());
+
+        info.getChildren().addAll(cat, title, author, priceRow, btnAdd, btnDetail);
+        card.getChildren().addAll(coverContainer, info);
+
+        return card;
+    }
+
+    public static Label categoryChip(String text, boolean active) {
+        Label l = new Label(text);
+        l.getStyleClass().add("chip");
+        if (active) l.getStyleClass().add("chip-active");
+        return l;
     }
 }
