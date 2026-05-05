@@ -43,7 +43,7 @@ public class DataStore {
     private void seedData() {
         // Users
         users.add(new User(1L, "Admin OpenLib", "admin@openlib.com", "admin123", "ADMIN"));
-        users.add(new User(2L, "Danna García", "danna@javeriana.edu.co", "buyer123", "BUYER"));
+        users.add(new User(2L, "a", "a@test.co", "000000", "BUYER"));
         users.add(new User(3L, "Carlos Ramírez", "carlos@javeriana.edu.co", "buyer123", "BUYER"));
 
         // Books

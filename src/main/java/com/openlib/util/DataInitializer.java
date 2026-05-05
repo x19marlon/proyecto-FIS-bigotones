@@ -69,9 +69,9 @@ public class DataInitializer {
 
             userRepository.save(User.builder()
                     .id(2L)
-                    .name("Danna García")
-                    .email("danna@javeriana.edu.co")
-                    .password("buyer123")
+                    .name("a")
+                    .email("a@test.co")
+                    .password("000000")
                     .role("BUYER")
                     .build());
         };

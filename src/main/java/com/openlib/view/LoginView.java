@@ -87,7 +87,7 @@ public class LoginView {
         demoTitle.setStyle("-fx-text-fill: #5C5C5C; -fx-font-size: 12px; -fx-font-weight: bold;");
         Label demoAdmin = new Label("🔐 Admin → admin@openlib.com / admin123");
         demoAdmin.setStyle("-fx-text-fill: #5C5C5C; -fx-font-size: 12px;");
-        Label demoBuyer = new Label("👤 Buyer → danna@javeriana.edu.co / buyer123");
+        Label demoBuyer = new Label("👤 Buyer → a@test.co / 000000");
         demoBuyer.setStyle("-fx-text-fill: #5C5C5C; -fx-font-size: 12px;");
         demoBox.getChildren().addAll(demoTitle, demoAdmin, demoBuyer);
 
