@@ -7,6 +7,7 @@ import com.openlib.model.User;
 import com.openlib.repository.BookRepository;
 import com.openlib.repository.OrderRepository;
 import com.openlib.repository.UserRepository;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,7 +24,7 @@ public class OrderService {
     private final BookRepository bookRepository;
 
     @Transactional
-    public Order placeOrder(Long userId, List<Long> bookIds) {
+    public Order placeOrder(Long userId, List<OrderItemRequest> items) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
@@ -35,19 +36,19 @@ public class OrderService {
                 .status("COMPLETED")
                 .build();
 
-        for (Long bookId : bookIds) {
-            Book book = bookRepository.findById(bookId)
-                    .orElseThrow(() -> new RuntimeException("Libro no encontrado: " + bookId));
+        for (OrderItemRequest req : items) {
+            Book book = bookRepository.findById(req.getBookId())
+                    .orElseThrow(() -> new RuntimeException("Libro no encontrado: " + req.getBookId()));
             
             OrderItem item = OrderItem.builder()
                     .book(book)
                     .order(order)
-                    .quantity(1)
+                    .quantity(req.getQuantity())
                     .priceAtPurchase(book.getPrice())
                     .build();
             
             orderItems.add(item);
-            total += book.getPrice();
+            total += book.getPrice() * req.getQuantity();
         }
 
         order.setItems(orderItems);
@@ -59,6 +60,12 @@ public class OrderService {
     public List<Order> getOrdersByUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        return orderRepository.findByUser(user);
+        return orderRepository.findByUserOrderByDateDesc(user);
+    }
+
+    @Data
+    public static class OrderItemRequest {
+        private Long bookId;
+        private Integer quantity;
     }
 }

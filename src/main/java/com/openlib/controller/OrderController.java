@@ -17,7 +17,7 @@ public class OrderController {
 
     @PostMapping
     public Order createOrder(@RequestBody OrderRequest request) {
-        return orderService.placeOrder(request.getUserId(), request.getBookIds());
+        return orderService.placeOrder(request.getUserId(), request.getItems());
     }
 
     @GetMapping("/user/{userId}")
@@ -28,6 +28,6 @@ public class OrderController {
     @Data
     public static class OrderRequest {
         private Long userId;
-        private List<Long> bookIds;
+        private List<OrderService.OrderItemRequest> items;
     }
 }

@@ -57,6 +57,7 @@ public class BuyerDashboardView {
 
         Button btnCatalog = ViewHelper.sidebarBtn("🏠  Catálogo", true, controller::goToCatalog);
         Button btnCart    = ViewHelper.sidebarBtn(cartLabel, false, controller::goToCart);
+        Button btnOrders  = ViewHelper.sidebarBtn("🧾  Mis Pedidos", false, controller::goToOrderHistory);
         Button btnLibrary = ViewHelper.sidebarBtn("📖  Mi Biblioteca", false, controller::goToLibrary);
 
         Region spacer = ViewHelper.vSpacer();

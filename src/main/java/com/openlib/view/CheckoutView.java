@@ -50,12 +50,13 @@ public class CheckoutView {
         step3.setStyle("-fx-text-fill: #6E7681; -fx-font-size: 13px; -fx-padding: 8 16;");
 
         Region spacer = ViewHelper.vSpacer();
+        Button btnOrders = ViewHelper.sidebarBtn("🧾  Mis Pedidos", false, controller::goToOrderHistory);
         Button backBtn = new Button("← Volver al carrito");
         backBtn.getStyleClass().add("sidebar-btn");
         backBtn.setMaxWidth(Double.MAX_VALUE);
         backBtn.setOnAction(e -> controller.goToCart());
 
-        sidebar.getChildren().addAll(logo, sub, step1, step2, step3, spacer, backBtn);
+        sidebar.getChildren().addAll(logo, sub, step1, step2, step3, spacer, btnOrders, backBtn);
         return sidebar;
     }
 
@@ -215,12 +216,17 @@ public class CheckoutView {
         libBtn.setPrefWidth(250);
         libBtn.setOnAction(e -> controller.goToLibrary());
 
+        Button histBtn = new Button("🧾 Ver Mis Pedidos");
+        histBtn.getStyleClass().add("btn-accent");
+        histBtn.setPrefWidth(250);
+        histBtn.setOnAction(e -> controller.goToOrderHistory());
+
         Button catalogBtn = new Button("Seguir explorando");
         catalogBtn.getStyleClass().add("btn-secondary");
         catalogBtn.setPrefWidth(250);
         catalogBtn.setOnAction(e -> controller.goToCatalog());
 
-        box.getChildren().addAll(iconBg, titleLbl, subLbl, orderCard, totalLbl, libBtn, catalogBtn);
+        box.getChildren().addAll(iconBg, titleLbl, subLbl, orderCard, totalLbl, libBtn, histBtn, catalogBtn);
         overlay.getChildren().add(box);
 
         // Replace center content

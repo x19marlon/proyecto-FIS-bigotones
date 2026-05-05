@@ -91,15 +91,22 @@ public class BuyerController {
     public Order placeOrder() {
         try {
             if (store.getCurrentUser() == null) return null;
+            if (store.getCart().isEmpty()) return null;
             
-            List<Long> bookIds = store.getCart().stream()
-                    .map(item -> item.getBook().getId())
+            List<com.openlib.service.OrderService.OrderItemRequest> items = store.getCart().stream()
+                    .map(item -> {
+                        com.openlib.service.OrderService.OrderItemRequest req = 
+                                new com.openlib.service.OrderService.OrderItemRequest();
+                        req.setBookId(item.getBook().getId());
+                        req.setQuantity(item.getQuantity());
+                        return req;
+                    })
                     .collect(java.util.stream.Collectors.toList());
 
             com.openlib.controller.OrderController.OrderRequest request = 
                     new com.openlib.controller.OrderController.OrderRequest();
             request.setUserId(store.getCurrentUser().getId());
-            request.setBookIds(bookIds);
+            request.setItems(items);
 
             Order order = com.openlib.util.ApiClient.post("/orders", request, Order.class);
             
@@ -130,7 +137,8 @@ public class BuyerController {
 
     public void goToCatalog()   { SceneManager.getInstance().showBuyerDashboard(); }
     public void goToCart()      { SceneManager.getInstance().showCart(); }
-    public void goToCheckout()  { SceneManager.getInstance().showCheckout(); }
-    public void goToLibrary()   { SceneManager.getInstance().showLibrary(); }
+    public void goToCheckout()      { SceneManager.getInstance().showCheckout(); }
+    public void goToOrderHistory()  { SceneManager.getInstance().showOrderHistory(); }
+    public void goToLibrary()       { SceneManager.getInstance().showLibrary(); }
     public void logout()        { new AuthController().logout(); }
 }

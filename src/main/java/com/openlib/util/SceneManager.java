@@ -53,6 +53,10 @@ public class SceneManager {
         setScene(new CheckoutView().buildScene());
     }
 
+    public void showOrderHistory() {
+        setScene(new OrderHistoryView().buildScene());
+    }
+
     public void showLibrary() {
         setScene(new LibraryView().buildScene());
     }

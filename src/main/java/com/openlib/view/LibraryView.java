@@ -41,6 +41,7 @@ public class LibraryView {
 
         Button btnCatalog = ViewHelper.sidebarBtn("🏠  Catálogo", false, controller::goToCatalog);
         Button btnCart    = ViewHelper.sidebarBtn("🛒  Carrito", false, controller::goToCart);
+        Button btnOrders  = ViewHelper.sidebarBtn("🧾  Mis Pedidos", false, controller::goToOrderHistory);
         Button btnLibrary = ViewHelper.sidebarBtn("📖  Mi Biblioteca", true, controller::goToLibrary);
 
         Region spacer = ViewHelper.vSpacer();
