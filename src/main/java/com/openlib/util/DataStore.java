@@ -42,9 +42,9 @@ public class DataStore {
 
     private void seedData() {
         // Users
-        users.add(new User(1L, "Admin OpenLib", "admin@openlib.com", "admin123", "ADMIN"));
-        users.add(new User(2L, "a", "a@test.co", "000000", "BUYER"));
-        users.add(new User(3L, "Carlos Ramírez", "carlos@javeriana.edu.co", "buyer123", "BUYER"));
+        users.add(new User(1L, "Admin OpenLib", "admin@openlib.com", "admin123", "ADMIN", "Oficina Central, Edificio Principal"));
+        users.add(new User(2L, "a", "a@test.co", "000000", "BUYER", "Campus Norte, Facultad de Ingeniería"));
+        users.add(new User(3L, "Carlos Ramírez", "carlos@javeriana.edu.co", "buyer123", "BUYER", "Campus Central, Edificio de Biblioteca"));
 
         // Books
         books.add(new Book(1, "Clean Code", "Robert C. Martin", "978-0132350884",
