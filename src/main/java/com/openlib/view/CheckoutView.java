@@ -129,7 +129,8 @@ public class CheckoutView {
         for (CartItem item : controller.getCart()) {
             HBox row = new HBox(10);
             row.setAlignment(Pos.CENTER_LEFT);
-            Label t = new Label(item.getBook().getTitle());
+            String titleStr = item.getBook().getTitle() == null ? "Sin título" : item.getBook().getTitle();
+            Label t = new Label(titleStr);
             t.getStyleClass().add("label-body");
             t.setWrapText(true);
             HBox.setHgrow(t, Priority.ALWAYS);
@@ -200,7 +201,8 @@ public class CheckoutView {
         VBox orderCard = ViewHelper.card(20);
         orderCard.setMaxWidth(400);
         for (com.openlib.model.OrderItem item : order.getItems()) {
-            Label lbl = new Label("📗 " + item.getBook().getTitle());
+            String titleStr = item.getBook().getTitle() == null ? "Sin título" : item.getBook().getTitle();
+            Label lbl = new Label("📗 " + titleStr);
             lbl.getStyleClass().add("label-body");
             orderCard.getChildren().add(lbl);
         }

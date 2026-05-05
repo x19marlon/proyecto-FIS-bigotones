@@ -149,12 +149,16 @@ public class CartView {
 
         VBox info = new VBox(6);
         HBox.setHgrow(info, Priority.ALWAYS);
-        Label titleLbl = new Label(item.getBook().getTitle());
+        String titleStr = item.getBook().getTitle() == null ? "Sin título" : item.getBook().getTitle();
+        Label titleLbl = new Label(titleStr);
         titleLbl.getStyleClass().add("product-title");
-        Label authorLbl = new Label("por " + item.getBook().getAuthor());
+
+        String authorStr = item.getBook().getAuthor() == null ? "Autor desconocido" : item.getBook().getAuthor();
+        Label authorLbl = new Label("por " + authorStr);
         authorLbl.getStyleClass().add("product-author");
         
-        Label catLbl = new Label(item.getBook().getCategory().toUpperCase());
+        String categoryStr = item.getBook().getCategory() == null ? "GENERAL" : item.getBook().getCategory().toUpperCase();
+        Label catLbl = new Label(categoryStr);
         catLbl.getStyleClass().add("product-badge");
         
         info.getChildren().addAll(catLbl, titleLbl, authorLbl);

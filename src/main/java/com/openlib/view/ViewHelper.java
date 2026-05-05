@@ -122,15 +122,28 @@ public class ViewHelper {
         VBox info = new VBox(8);
         info.getStyleClass().add("product-info-container");
 
-        Label cat = new Label(book.getCategory().toUpperCase());
+        String categoryStr = book.getCategory() == null ? "GENERAL" : book.getCategory().toUpperCase();
+        Label cat = new Label(categoryStr);
         cat.getStyleClass().add("product-badge");
 
-        Label title = new Label(book.getTitle());
+        // Status badge
+        if (book.getStatus() != null && !"APROBADO".equals(book.getStatus())) {
+            Label statusBadge = new Label(book.getStatus());
+            statusBadge.getStyleClass().add("badge-warn");
+            HBox badges = new HBox(6, cat, statusBadge);
+            info.getChildren().add(badges);
+        } else {
+            info.getChildren().add(cat);
+        }
+
+        String titleStr = book.getTitle() == null ? "Sin título" : book.getTitle();
+        Label title = new Label(titleStr);
         title.getStyleClass().add("product-title");
         title.setMinHeight(50);
-        title.setAlignment(Pos.TOP_LEFT);
+        title.setWrapText(true);
 
-        Label author = new Label("por " + book.getAuthor());
+        String authorStr = book.getAuthor() == null ? "Autor desconocido" : book.getAuthor();
+        Label author = new Label("por " + authorStr);
         author.getStyleClass().add("product-author");
 
         Label shortDesc = new Label("Material educativo de alta calidad disponible para descarga inmediata.");
@@ -155,7 +168,7 @@ public class ViewHelper {
         btnDetail.setMaxWidth(Double.MAX_VALUE);
         btnDetail.setOnAction(e -> onDetail.run());
 
-        info.getChildren().addAll(cat, title, author, shortDesc, priceRow, btnAdd, btnDetail);
+        info.getChildren().addAll(title, author, shortDesc, priceRow, btnAdd, btnDetail);
         card.getChildren().addAll(coverContainer, info);
 
         return card;

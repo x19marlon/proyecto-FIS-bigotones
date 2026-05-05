@@ -152,20 +152,36 @@ public class BuyerDashboardView {
     }
 
     private void refreshBooks(String query, String category) {
-        // TODO: In the future, this should call controller.getBooksPaginated(query, category, currentPage, pageSize)
-        // to avoid loading all books into memory.
-        cachedBooks = controller.getBooks(query, category);
-        
-        // Sorting logic (Frontend)
-        String sort = sortCombo.getValue();
-        if (sort.contains("Título (A-Z)")) {
-            cachedBooks.sort((a, b) -> a.getTitle().compareToIgnoreCase(b.getTitle()));
-        } else if (sort.contains("Título (Z-A)")) {
-            cachedBooks.sort((a, b) -> b.getTitle().compareToIgnoreCase(a.getTitle()));
-        }
-        // "Más recientes" is default (usually insertion order in our store)
+        try {
+            cachedBooks = new java.util.ArrayList<>(controller.getBooks(query, category));
+            
+            // Sorting logic (Frontend)
+            String sort = sortCombo.getValue();
+            if (sort != null) {
+                if (sort.contains("Título (A-Z)")) {
+                    cachedBooks.sort((a, b) -> {
+                        String t1 = a.getTitle() == null ? "" : a.getTitle();
+                        String t2 = b.getTitle() == null ? "" : b.getTitle();
+                        return t1.compareToIgnoreCase(t2);
+                    });
+                } else if (sort.contains("Título (Z-A)")) {
+                    cachedBooks.sort((a, b) -> {
+                        String t1 = a.getTitle() == null ? "" : a.getTitle();
+                        String t2 = b.getTitle() == null ? "" : b.getTitle();
+                        return t2.compareToIgnoreCase(t1);
+                    });
+                }
+            }
 
-        renderCurrentPage();
+            renderCurrentPage();
+        } catch (Exception e) {
+            e.printStackTrace(); // Crucial for debugging
+            booksGrid.getChildren().clear();
+            booksGrid.getChildren().add(ViewHelper.stateView("⚠️", 
+                "Error al cargar el catálogo", 
+                "Hubo un problema inesperado. Por favor intenta de nuevo."));
+            paginationFooter.setVisible(false);
+        }
     }
 
     private void renderCurrentPage() {
@@ -268,7 +284,22 @@ public class BuyerDashboardView {
         coverWrapper.setPadding(new Insets(40));
 
         VBox info = new VBox(15);
-        Label title = new Label(book.getTitle());
+        String categoryStr = book.getCategory() == null ? "GENERAL" : book.getCategory().toUpperCase();
+        Label cat = new Label(categoryStr);
+        cat.getStyleClass().add("product-badge");
+
+        // Status badge
+        if (book.getStatus() != null && !"APROBADO".equals(book.getStatus())) {
+            Label statusBadge = new Label(book.getStatus());
+            statusBadge.getStyleClass().add("badge-warn");
+            HBox badges = new HBox(6, cat, statusBadge);
+            info.getChildren().add(badges);
+        } else {
+            info.getChildren().add(cat);
+        }
+
+        String titleStr = book.getTitle() == null ? "Sin título" : book.getTitle();
+        Label title = new Label(titleStr);
         title.getStyleClass().add("label-h1");
         title.setWrapText(true);
 

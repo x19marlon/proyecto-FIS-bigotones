@@ -15,10 +15,43 @@ public class BuyerController {
     // ---- Catalog ----
 
     public List<Book> getBooks(String query, String category) {
-        return store.searchBooks(query, category);
+        try {
+            // Try fetching from Backend API
+            // Note: API returns a Page<Book> object { content: [...], totalElements: ... }
+            java.util.Map<String, Object> response = com.openlib.util.ApiClient.get("/books", java.util.Map.class);
+            List<java.util.Map<String, Object>> content = (List<java.util.Map<String, Object>>) response.get("content");
+            
+            java.util.List<Book> allBooks = new java.util.ArrayList<>();
+            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper()
+                    .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
+            
+            for (java.util.Map<String, Object> bookMap : content) {
+                allBooks.add(mapper.convertValue(bookMap, Book.class));
+            }
+
+            // Local filtering (since backend /api/books doesn't support query/category yet)
+            String q = query == null ? "" : query.toLowerCase().trim();
+            return allBooks.stream()
+                    .filter(b -> {
+                        String title = b.getTitle() == null ? "" : b.getTitle().toLowerCase();
+                        String author = b.getAuthor() == null ? "" : b.getAuthor().toLowerCase();
+                        String isbn = b.getIsbn() == null ? "" : b.getIsbn();
+                        String bCat = b.getCategory() == null ? "" : b.getCategory();
+
+                        boolean matchQ = q.isEmpty() || title.contains(q) || author.contains(q) || isbn.contains(q);
+                        boolean matchCat = category == null || category.equals("Todas") || bCat.equals(category);
+                        return matchQ && matchCat;
+                    })
+                    .collect(java.util.stream.Collectors.toList());
+
+        } catch (Exception e) {
+            System.err.println("Backend API not available or error, falling back to local DataStore: " + e.getMessage());
+            return store.searchBooks(query, category);
+        }
     }
 
     public List<String> getCategories() {
+        // We still use DataStore for categories or we could fetch them from backend too
         return store.getCategories();
     }
 
