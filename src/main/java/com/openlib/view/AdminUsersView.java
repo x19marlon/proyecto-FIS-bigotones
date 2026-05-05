@@ -57,7 +57,7 @@ public class AdminUsersView {
 
     private VBox buildContent() {
         VBox content = new VBox(0);
-        content.setStyle("-fx-background-color: #0D1117;");
+        content.getStyleClass().add("pane-root");
 
         HBox topbar = new HBox();
         topbar.getStyleClass().add("topbar");
@@ -160,13 +160,12 @@ public class AdminUsersView {
 
     private VBox miniStat(String label, String value) {
         VBox card = new VBox(4);
-        card.setStyle("-fx-background-color: #161B22; -fx-border-color: #30363D; "
-                + "-fx-border-width: 1; -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 16;");
+        card.getStyleClass().add("stat-card");
         card.setPrefWidth(160);
         Label v = new Label(value);
-        v.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #2EA043;");
+        v.getStyleClass().add("stat-number");
         Label l = new Label(label);
-        l.setStyle("-fx-text-fill: #8B949E; -fx-font-size: 12px;");
+        l.getStyleClass().add("stat-label");
         card.getChildren().addAll(v, l);
         return card;
     }

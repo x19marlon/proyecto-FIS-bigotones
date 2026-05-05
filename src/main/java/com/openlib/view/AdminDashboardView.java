@@ -52,7 +52,7 @@ public class AdminDashboardView {
 
     private VBox buildContent() {
         VBox content = new VBox(0);
-        content.setStyle("-fx-background-color: #0D1117;");
+        content.getStyleClass().add("pane-root");
 
         HBox topbar = new HBox();
         topbar.getStyleClass().add("topbar");
@@ -88,11 +88,11 @@ public class AdminDashboardView {
             StackPane cover = ViewHelper.bookCover(topBook.getCoverColor(), topBook.getTitle(), true);
             VBox info = new VBox(8);
             Label tLbl = new Label(topBook.getTitle());
-            tLbl.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #F0F6FC;");
+            tLbl.getStyleClass().add("label-h2");
             Label aLbl = new Label("por " + topBook.getAuthor());
-            aLbl.setStyle("-fx-text-fill: #8B949E;");
+            aLbl.getStyleClass().add("label-body");
             Label dlLbl = new Label("⬇  " + topBook.getDownloads() + " descargas");
-            dlLbl.setStyle("-fx-text-fill: #2EA043; -fx-font-size: 16px; -fx-font-weight: bold;");
+            dlLbl.getStyleClass().add("label-accent");
             Label catBadge = new Label(topBook.getCategory());
             catBadge.getStyleClass().add("badge");
             info.getChildren().addAll(tLbl, aLbl, dlLbl, catBadge);
@@ -146,7 +146,7 @@ public class AdminDashboardView {
         card.getChildren().addAll(iconLbl, valLbl, lblLbl);
         if (extra != null) {
             Label extraLbl = new Label(extra);
-            extraLbl.setStyle("-fx-text-fill: #6E7681; -fx-font-size: 11px;");
+            extraLbl.getStyleClass().add("label-small");
             card.getChildren().add(extraLbl);
         }
         return card;

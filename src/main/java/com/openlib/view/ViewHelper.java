@@ -44,14 +44,13 @@ public class ViewHelper {
         return sb.toString().toUpperCase();
     }
 
-    /** Creates the star rating label */
     public static Label starRating(double rating) {
         int full = (int) rating;
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 5; i++) sb.append(i < full ? "★" : "☆");
         sb.append(String.format(" %.1f", rating));
         Label lbl = new Label(sb.toString());
-        lbl.setStyle("-fx-text-fill: #E3B341; -fx-font-size: 12px;");
+        lbl.setStyle("-fx-text-fill: #C97B63; -fx-font-size: 13px; -fx-font-weight: bold;");
         return lbl;
     }
 
@@ -86,12 +85,13 @@ public class ViewHelper {
         return btn;
     }
 
-    /** Creates an info row label + value */
     public static HBox infoRow(String label, String value) {
         Label lbl = new Label(label);
-        lbl.setStyle("-fx-text-fill: #8B949E; -fx-min-width: 120px; -fx-font-size: 13px;");
+        lbl.getStyleClass().add("label-small");
+        lbl.setStyle("-fx-min-width: 120px;");
         Label val = new Label(value);
-        val.setStyle("-fx-text-fill: #F0F6FC; -fx-font-size: 13px;");
+        val.getStyleClass().add("label-body");
+        val.setStyle("-fx-font-weight: bold;");
         HBox row = new HBox(8, lbl, val);
         row.setAlignment(Pos.CENTER_LEFT);
         return row;

@@ -55,7 +55,7 @@ public class LibraryView {
 
     private VBox buildContent() {
         VBox content = new VBox(0);
-        content.setStyle("-fx-background-color: #0D1117;");
+        content.getStyleClass().add("pane-root");
 
         HBox topbar = new HBox();
         topbar.getStyleClass().add("topbar");
@@ -76,9 +76,9 @@ public class LibraryView {
             Label emptyIcon = new Label("📭");
             emptyIcon.setStyle("-fx-font-size: 48px;");
             Label emptyLbl = new Label("Tu biblioteca está vacía.");
-            emptyLbl.setStyle("-fx-font-size: 18px; -fx-text-fill: #8B949E;");
+            emptyLbl.getStyleClass().add("label-h2");
             Label emptyHint = new Label("Explora el catálogo y agrega libros a tu carrito.");
-            emptyHint.setStyle("-fx-font-size: 13px; -fx-text-fill: #6E7681;");
+            emptyHint.getStyleClass().add("label-body");
             Button exploreBtn = new Button("Explorar catálogo →");
             exploreBtn.getStyleClass().add("btn-primary");
             exploreBtn.setOnAction(e -> controller.goToCatalog());
@@ -95,24 +95,24 @@ public class LibraryView {
                 HBox orderHeader = new HBox(12);
                 orderHeader.setAlignment(Pos.CENTER_LEFT);
                 Label orderIdLbl = new Label("Orden #" + order.getId());
-                orderIdLbl.setStyle("-fx-font-size: 15px; -fx-font-weight: bold; -fx-text-fill: #F0F6FC;");
+                orderIdLbl.getStyleClass().add("label-title");
                 Label dateLbl = new Label(order.getDate().format(fmt));
-                dateLbl.setStyle("-fx-text-fill: #8B949E; -fx-font-size: 12px;");
+                dateLbl.getStyleClass().add("label-small");
                 Label statusBadge = new Label("✓ " + order.getStatus());
                 statusBadge.getStyleClass().add("badge");
                 Region spc = ViewHelper.spacer();
                 Label totalLbl = new Label(String.format("$%.2f", order.getTotal()));
-                totalLbl.setStyle("-fx-text-fill: #2EA043; -fx-font-weight: bold;");
+                totalLbl.getStyleClass().add("label-accent");
                 orderHeader.getChildren().addAll(orderIdLbl, dateLbl, spc, statusBadge, totalLbl);
 
                 Separator sep = new Separator();
-                sep.setStyle("-fx-background-color: #30363D;");
+                sep.getStyleClass().add("separator-light");
 
                 FlowPane booksFlow = new FlowPane(12, 8);
                 for (com.openlib.model.OrderItem item : order.getItems()) {
                     HBox bookRow = new HBox(10);
                     bookRow.setAlignment(Pos.CENTER_LEFT);
-                    bookRow.setStyle("-fx-background-color: #21262D; -fx-background-radius: 6; -fx-padding: 10 14;");
+                    bookRow.setStyle("-fx-background-color: #EDE3D2; -fx-background-radius: 6; -fx-padding: 10 14;");
 
                     StackPane cover = ViewHelper.bookCover(item.getBook().getCoverColor(),
                             item.getBook().getTitle(), false);
@@ -120,9 +120,9 @@ public class LibraryView {
 
                     VBox info = new VBox(3);
                     Label tLbl = new Label(item.getBook().getTitle());
-                    tLbl.setStyle("-fx-font-size: 13px; -fx-font-weight: bold; -fx-text-fill: #F0F6FC;");
+                    tLbl.getStyleClass().add("label-title");
                     Label aLbl = new Label(item.getBook().getAuthor());
-                    aLbl.setStyle("-fx-font-size: 12px; -fx-text-fill: #8B949E;");
+                    aLbl.getStyleClass().add("label-small");
 
                     Button dlBtn = new Button("⬇ Descargar");
                     dlBtn.getStyleClass().add("btn-icon");

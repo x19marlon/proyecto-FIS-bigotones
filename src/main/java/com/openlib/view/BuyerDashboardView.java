@@ -98,10 +98,11 @@ public class BuyerDashboardView {
 
         // Books grid
         booksGrid = new FlowPane();
-        booksGrid.setHgap(16);
-        booksGrid.setVgap(16);
-        booksGrid.setPadding(new Insets(24));
-        booksGrid.setStyle("-fx-background-color: #0D1117;");
+        booksGrid.setHgap(20);
+        booksGrid.setVgap(20);
+        booksGrid.setPadding(new Insets(32));
+        // Use css class
+        booksGrid.getStyleClass().add("pane-root");
 
         ScrollPane scroll = new ScrollPane(booksGrid);
         scroll.setFitToWidth(true);
@@ -118,9 +119,17 @@ public class BuyerDashboardView {
         List<Book> books = controller.getBooks(query, category);
 
         if (books.isEmpty()) {
+            VBox emptyBox = new VBox(12);
+            emptyBox.setAlignment(Pos.CENTER);
+            emptyBox.setPadding(new Insets(60));
+            Label icon = new Label("📚");
+            icon.setStyle("-fx-font-size: 48px;");
             Label empty = new Label("No se encontraron libros.");
-            empty.setStyle("-fx-text-fill: #8B949E; -fx-font-size: 16px; -fx-padding: 40;");
-            booksGrid.getChildren().add(empty);
+            empty.getStyleClass().add("label-h2");
+            Label subEmpty = new Label("Intenta con otros términos de búsqueda o categoría.");
+            subEmpty.getStyleClass().add("label-body");
+            emptyBox.getChildren().addAll(icon, empty, subEmpty);
+            booksGrid.getChildren().add(emptyBox);
             return;
         }
 
@@ -139,11 +148,11 @@ public class BuyerDashboardView {
         StackPane cover = ViewHelper.bookCover(book.getCoverColor(), book.getTitle(), false);
 
         Label titleLbl = new Label(book.getTitle());
-        titleLbl.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #F0F6FC; -fx-wrap-text: true;");
+        titleLbl.getStyleClass().add("label-title");
         titleLbl.setWrapText(true);
 
         Label authorLbl = new Label(book.getAuthor());
-        authorLbl.setStyle("-fx-font-size: 12px; -fx-text-fill: #8B949E;");
+        authorLbl.getStyleClass().add("label-small");
 
         HBox meta = new HBox(8);
         meta.setAlignment(Pos.CENTER_LEFT);
@@ -151,7 +160,7 @@ public class BuyerDashboardView {
         catBadge.getStyleClass().add("badge");
 
         Label dlLbl = new Label("⬇ " + book.getDownloads());
-        dlLbl.setStyle("-fx-text-fill: #6E7681; -fx-font-size: 11px;");
+        dlLbl.getStyleClass().add("label-small");
         meta.getChildren().addAll(catBadge, dlLbl);
 
         Label freeLbl = ViewHelper.freeBadge();

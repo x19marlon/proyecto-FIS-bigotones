@@ -57,7 +57,7 @@ public class AdminBooksView {
 
     private VBox buildContent() {
         VBox content = new VBox(0);
-        content.setStyle("-fx-background-color: #0D1117;");
+        content.getStyleClass().add("pane-root");
 
         HBox topbar = new HBox();
         topbar.getStyleClass().add("topbar");

@@ -20,16 +20,16 @@ public class LoginView {
     public Scene buildScene() {
         // Background
         StackPane root = new StackPane();
-        root.setStyle("-fx-background-color: #0D1117;");
+        root.getStyleClass().add("auth-container");
 
         // Decorative circles
         Circle c1 = new Circle(200);
-        c1.setFill(Color.web("#2EA043", 0.04));
+        c1.setFill(Color.web("#A7C4BC", 0.25));
         c1.setTranslateX(-350);
         c1.setTranslateY(-200);
 
         Circle c2 = new Circle(150);
-        c2.setFill(Color.web("#2EA043", 0.06));
+        c2.setFill(Color.web("#A7C4BC", 0.35));
         c2.setTranslateX(400);
         c2.setTranslateY(300);
 
@@ -46,10 +46,10 @@ public class LoginView {
         tagline.getStyleClass().add("auth-tagline");
 
         Separator sep = new Separator();
-        sep.setStyle("-fx-background-color: #30363D;");
+        sep.getStyleClass().add("separator-light");
 
         Label title = new Label("Iniciar sesión");
-        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #F0F6FC;");
+        title.getStyleClass().add("label-h2");
 
         // Fields
         Label emailLbl = new Label("Correo electrónico");
@@ -82,22 +82,22 @@ public class LoginView {
 
         // Demo hint
         VBox demoBox = new VBox(4);
-        demoBox.setStyle("-fx-background-color: #21262D; -fx-background-radius: 6; -fx-padding: 12;");
+        demoBox.setStyle("-fx-background-color: #EDE3D2; -fx-background-radius: 6; -fx-padding: 12;");
         Label demoTitle = new Label("Cuentas de demo:");
-        demoTitle.setStyle("-fx-text-fill: #8B949E; -fx-font-size: 12px; -fx-font-weight: bold;");
+        demoTitle.setStyle("-fx-text-fill: #5C5C5C; -fx-font-size: 12px; -fx-font-weight: bold;");
         Label demoAdmin = new Label("🔐 Admin → admin@openlib.com / admin123");
-        demoAdmin.setStyle("-fx-text-fill: #6E7681; -fx-font-size: 12px;");
+        demoAdmin.setStyle("-fx-text-fill: #5C5C5C; -fx-font-size: 12px;");
         Label demoBuyer = new Label("👤 Buyer → danna@javeriana.edu.co / buyer123");
-        demoBuyer.setStyle("-fx-text-fill: #6E7681; -fx-font-size: 12px;");
+        demoBuyer.setStyle("-fx-text-fill: #5C5C5C; -fx-font-size: 12px;");
         demoBox.getChildren().addAll(demoTitle, demoAdmin, demoBuyer);
 
         // Register link
         HBox regRow = new HBox(6);
         regRow.setAlignment(Pos.CENTER);
         Label regLbl = new Label("¿No tienes cuenta?");
-        regLbl.setStyle("-fx-text-fill: #8B949E; -fx-font-size: 13px;");
+        regLbl.setStyle("-fx-text-fill: #5C5C5C; -fx-font-size: 13px;");
         Button regBtn = new Button("Regístrate");
-        regBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #2EA043; "
+        regBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #2F5D62; "
                 + "-fx-font-size: 13px; -fx-cursor: hand; -fx-underline: true; -fx-border-width: 0;");
         regBtn.setOnAction(e -> SceneManager.getInstance().showRegister());
         regRow.getChildren().addAll(regLbl, regBtn);

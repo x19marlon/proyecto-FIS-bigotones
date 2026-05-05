@@ -56,7 +56,7 @@ public class AdminOrdersView {
 
     private VBox buildContent() {
         VBox content = new VBox(0);
-        content.setStyle("-fx-background-color: #0D1117;");
+        content.getStyleClass().add("pane-root");
 
         HBox topbar = new HBox();
         topbar.getStyleClass().add("topbar");
@@ -73,11 +73,12 @@ public class AdminOrdersView {
 
         if (orders.isEmpty()) {
             Label empty = new Label("No hay pedidos registrados aún.");
-            empty.setStyle("-fx-text-fill: #8B949E; -fx-font-size: 15px; -fx-padding: 24;");
+            empty.getStyleClass().add("label-h2");
+            empty.setPadding(new Insets(24));
             inner.getChildren().add(empty);
         } else {
             Label count = new Label("Total: " + orders.size() + " pedidos");
-            count.setStyle("-fx-text-fill: #8B949E; -fx-font-size: 13px;");
+            count.getStyleClass().add("label-small");
             inner.getChildren().add(count);
 
             for (Order order : orders) {
@@ -87,13 +88,13 @@ public class AdminOrdersView {
                 header.setAlignment(Pos.CENTER_LEFT);
 
                 Label orderIdLbl = new Label("Orden #" + order.getId());
-                orderIdLbl.setStyle("-fx-font-weight: bold; -fx-text-fill: #F0F6FC; -fx-font-size: 14px;");
+                orderIdLbl.getStyleClass().add("label-title");
 
                 Label userLbl = new Label("👤 " + order.getUser().getName());
-                userLbl.setStyle("-fx-text-fill: #8B949E; -fx-font-size: 13px;");
+                userLbl.getStyleClass().add("label-body");
 
                 Label dateLbl = new Label("🕐 " + order.getDate().format(fmt));
-                dateLbl.setStyle("-fx-text-fill: #6E7681; -fx-font-size: 12px;");
+                dateLbl.getStyleClass().add("label-small");
 
                 Region spc = ViewHelper.spacer();
 
@@ -101,7 +102,7 @@ public class AdminOrdersView {
                 statusBadge.getStyleClass().add("badge");
 
                 Label totalLbl = new Label(String.format("$%.2f", order.getTotal()));
-                totalLbl.setStyle("-fx-font-weight: bold; -fx-text-fill: #2EA043; -fx-font-size: 15px;");
+                totalLbl.setStyle("-fx-font-weight: bold; -fx-text-fill: #2F5D62; -fx-font-size: 15px;");
 
                 header.getChildren().addAll(orderIdLbl, userLbl, dateLbl, spc, statusBadge, totalLbl);
 
@@ -110,7 +111,7 @@ public class AdminOrdersView {
                 booksRow.setAlignment(Pos.CENTER_LEFT);
                 for (com.openlib.model.OrderItem item : order.getItems()) {
                     Label bookBadge = new Label("📗 " + item.getBook().getTitle());
-                    bookBadge.setStyle("-fx-background-color: #21262D; -fx-text-fill: #F0F6FC; "
+                    bookBadge.setStyle("-fx-background-color: #EDE3D2; -fx-text-fill: #2E2E2E; "
                             + "-fx-padding: 4 10; -fx-background-radius: 4; -fx-font-size: 12px;");
                     booksRow.getChildren().add(bookBadge);
                 }

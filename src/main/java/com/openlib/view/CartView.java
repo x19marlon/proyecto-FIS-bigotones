@@ -56,7 +56,7 @@ public class CartView {
     private HBox buildContent() {
         HBox content = new HBox(24);
         content.setPadding(new Insets(24));
-        content.setStyle("-fx-background-color: #0D1117;");
+        content.getStyleClass().add("pane-root");
 
         // Left: items list
         VBox leftCol = new VBox(12);
@@ -83,15 +83,15 @@ public class CartView {
 
         VBox summaryCard = ViewHelper.card(20);
         Label summaryTitle = new Label("Resumen del pedido");
-        summaryTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #F0F6FC;");
+        summaryTitle.getStyleClass().add("label-title");
 
         totalLbl = new Label("Total: $0.00");
-        totalLbl.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #2EA043;");
+        totalLbl.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2F5D62;");
         updateTotal();
 
         Label note = new Label("Todos los libros son de acceso libre y gratuito.");
         note.setWrapText(true);
-        note.setStyle("-fx-text-fill: #8B949E; -fx-font-size: 12px;");
+        note.getStyleClass().add("label-small");
 
         Button checkoutBtn = new Button("Proceder al Checkout →");
         checkoutBtn.getStyleClass().add("btn-primary");
@@ -119,9 +119,17 @@ public class CartView {
         List<CartItem> cart = controller.getCart();
 
         if (cart.isEmpty()) {
-            Label empty = new Label("Tu carrito está vacío. ¡Explora el catálogo!");
-            empty.setStyle("-fx-text-fill: #8B949E; -fx-font-size: 15px; -fx-padding: 20;");
-            itemsBox.getChildren().add(empty);
+            VBox emptyBox = new VBox(12);
+            emptyBox.setAlignment(Pos.CENTER);
+            emptyBox.setPadding(new Insets(60));
+            Label icon = new Label("🛒");
+            icon.setStyle("-fx-font-size: 48px;");
+            Label empty = new Label("Tu carrito está vacío.");
+            empty.getStyleClass().add("label-h2");
+            Label subEmpty = new Label("¡Explora el catálogo para agregar libros!");
+            subEmpty.getStyleClass().add("label-body");
+            emptyBox.getChildren().addAll(icon, empty, subEmpty);
+            itemsBox.getChildren().add(emptyBox);
             return;
         }
 
@@ -150,7 +158,7 @@ public class CartView {
         info.getChildren().addAll(titleLbl, authorLbl, catLbl);
 
         Label price = new Label("GRATIS");
-        price.setStyle("-fx-text-fill: #2EA043; -fx-font-weight: bold; -fx-font-size: 15px;");
+        price.setStyle("-fx-text-fill: #2F5D62; -fx-font-weight: bold; -fx-font-size: 15px;");
 
         Button removeBtn = new Button("Quitar");
         removeBtn.getStyleClass().add("btn-danger");

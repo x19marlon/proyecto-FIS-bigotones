@@ -43,9 +43,9 @@ public class CheckoutView {
         sub.setPadding(new Insets(0, 6, 16, 6));
 
         Label step1 = new Label("✅  1. Carrito");
-        step1.setStyle("-fx-text-fill: #2EA043; -fx-font-size: 13px; -fx-padding: 8 16;");
+        step1.setStyle("-fx-text-fill: #2F5D62; -fx-font-size: 13px; -fx-padding: 8 16;");
         Label step2 = new Label("➡  2. Checkout");
-        step2.setStyle("-fx-text-fill: #F0F6FC; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8 16;");
+        step2.setStyle("-fx-text-fill: #2E2E2E; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8 16;");
         Label step3 = new Label("◯  3. Confirmación");
         step3.setStyle("-fx-text-fill: #6E7681; -fx-font-size: 13px; -fx-padding: 8 16;");
 
@@ -62,7 +62,7 @@ public class CheckoutView {
     private HBox buildCheckoutForm() {
         HBox content = new HBox(24);
         content.setPadding(new Insets(24));
-        content.setStyle("-fx-background-color: #0D1117;");
+        content.getStyleClass().add("pane-root");
 
         // Left: billing form
         VBox leftCol = new VBox(16);
@@ -103,10 +103,10 @@ public class CheckoutView {
         RadioButton payFree = new RadioButton("🎓 Acceso Institucional (Gratis)");
         payFree.setToggleGroup(payGroup);
         payFree.setSelected(true);
-        payFree.setStyle("-fx-text-fill: #F0F6FC;");
+        payFree.setStyle("-fx-text-fill: #2E2E2E;");
         RadioButton payDonation = new RadioButton("❤️  Donación simbólica ($1.00)");
         payDonation.setToggleGroup(payGroup);
-        payDonation.setStyle("-fx-text-fill: #F0F6FC;");
+        payDonation.setStyle("-fx-text-fill: #2E2E2E;");
 
         formCard.getChildren().addAll(
                 nameLbl, nameField,
@@ -123,27 +123,27 @@ public class CheckoutView {
 
         VBox summaryCard = ViewHelper.card(20);
         Label sumTitle = new Label("Resumen del pedido");
-        sumTitle.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #F0F6FC;");
+        sumTitle.getStyleClass().add("label-title");
         summaryCard.getChildren().add(sumTitle);
 
         for (CartItem item : controller.getCart()) {
             HBox row = new HBox(10);
             row.setAlignment(Pos.CENTER_LEFT);
             Label t = new Label(item.getBook().getTitle());
-            t.setStyle("-fx-text-fill: #F0F6FC; -fx-font-size: 13px;");
+            t.getStyleClass().add("label-body");
             t.setWrapText(true);
             HBox.setHgrow(t, Priority.ALWAYS);
             Label p = new Label("GRATIS");
-            p.setStyle("-fx-text-fill: #2EA043; -fx-font-size: 13px;");
+            p.setStyle("-fx-text-fill: #2F5D62; -fx-font-weight: bold; -fx-font-size: 13px;");
             row.getChildren().addAll(t, p);
             summaryCard.getChildren().add(row);
         }
 
         Separator sep = new Separator();
-        sep.setStyle("-fx-background-color: #30363D;");
+        sep.getStyleClass().add("separator-light");
 
         Label totalLbl = new Label(String.format("Total: $%.2f", controller.getCartTotal()));
-        totalLbl.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2EA043;");
+        totalLbl.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2F5D62;");
 
         // Error
         Label errorLbl = new Label();
@@ -175,7 +175,7 @@ public class CheckoutView {
 
     private void showConfirmation(Order order) {
         StackPane overlay = new StackPane();
-        overlay.setStyle("-fx-background-color: rgba(13,17,23,0.97);");
+        overlay.setStyle("-fx-background-color: rgba(250,247,240,0.97);");
 
         VBox box = new VBox(20);
         box.setAlignment(Pos.CENTER);
@@ -185,28 +185,28 @@ public class CheckoutView {
         // Success icon
         StackPane iconBg = new StackPane();
         Circle circle = new Circle(40);
-        circle.setFill(Color.web("#1F3A2A"));
+        circle.setFill(Color.web("#EDE3D2"));
         Label checkLbl = new Label("✓");
-        checkLbl.setStyle("-fx-font-size: 36px; -fx-text-fill: #2EA043; -fx-font-weight: bold;");
+        checkLbl.setStyle("-fx-font-size: 36px; -fx-text-fill: #2F5D62; -fx-font-weight: bold;");
         iconBg.getChildren().addAll(circle, checkLbl);
 
         Label titleLbl = new Label("¡Pedido confirmado!");
-        titleLbl.setStyle("-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #F0F6FC;");
+        titleLbl.getStyleClass().add("label-h1");
 
         Label subLbl = new Label("Orden #" + order.getId() + " — "
                 + order.getDate().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")));
-        subLbl.setStyle("-fx-text-fill: #8B949E; -fx-font-size: 14px;");
+        subLbl.getStyleClass().add("label-body");
 
         VBox orderCard = ViewHelper.card(20);
         orderCard.setMaxWidth(400);
         for (com.openlib.model.OrderItem item : order.getItems()) {
             Label lbl = new Label("📗 " + item.getBook().getTitle());
-            lbl.setStyle("-fx-text-fill: #F0F6FC; -fx-font-size: 14px;");
+            lbl.getStyleClass().add("label-body");
             orderCard.getChildren().add(lbl);
         }
 
         Label totalLbl = new Label(String.format("Total cobrado: $%.2f", order.getTotal()));
-        totalLbl.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2EA043;");
+        totalLbl.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #2F5D62;");
 
         Button libBtn = new Button("📖 Ir a mi Biblioteca");
         libBtn.getStyleClass().add("btn-primary");

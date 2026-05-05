@@ -15,10 +15,10 @@ public class RegisterView {
 
     public Scene buildScene() {
         StackPane root = new StackPane();
-        root.setStyle("-fx-background-color: #0D1117;");
+        root.getStyleClass().add("auth-container");
 
         Circle c1 = new Circle(180);
-        c1.setFill(Color.web("#2EA043", 0.04));
+        c1.setFill(Color.web("#A7C4BC", 0.25));
         c1.setTranslateX(350); c1.setTranslateY(-250);
 
         VBox card = new VBox(16);
@@ -30,7 +30,7 @@ public class RegisterView {
         logo.getStyleClass().add("auth-logo");
 
         Label title = new Label("Crear cuenta");
-        title.setStyle("-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #F0F6FC;");
+        title.getStyleClass().add("label-h2");
 
         Label nameLbl = new Label("Nombre completo");
         nameLbl.getStyleClass().add("input-label");
@@ -75,9 +75,9 @@ public class RegisterView {
         HBox backRow = new HBox(6);
         backRow.setAlignment(Pos.CENTER);
         Label backLbl = new Label("¿Ya tienes cuenta?");
-        backLbl.setStyle("-fx-text-fill: #8B949E; -fx-font-size: 13px;");
+        backLbl.setStyle("-fx-text-fill: #5C5C5C; -fx-font-size: 13px;");
         Button backBtn = new Button("Inicia sesión");
-        backBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #2EA043; "
+        backBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #2F5D62; "
                 + "-fx-font-size: 13px; -fx-cursor: hand; -fx-underline: true; -fx-border-width: 0;");
         backBtn.setOnAction(e -> SceneManager.getInstance().showLogin());
         backRow.getChildren().addAll(backLbl, backBtn);
