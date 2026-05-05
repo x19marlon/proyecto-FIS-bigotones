@@ -26,8 +26,8 @@ public class DataStore {
     private final List<CartItem> cart = new ArrayList<>();
 
     private User currentUser = null;
-    private int nextUserId = 10;
-    private int nextOrderId = 100;
+    private Long nextUserId = 10L;
+    private Long nextOrderId = 100L;
 
     private DataStore() {
         seedData();
@@ -42,9 +42,9 @@ public class DataStore {
 
     private void seedData() {
         // Users
-        users.add(new User(1, "Admin OpenLib", "admin@openlib.com", "admin123", "ADMIN"));
-        users.add(new User(2, "Danna García", "danna@javeriana.edu.co", "buyer123", "BUYER"));
-        users.add(new User(3, "Carlos Ramírez", "carlos@javeriana.edu.co", "buyer123", "BUYER"));
+        users.add(new User(1L, "Admin OpenLib", "admin@openlib.com", "admin123", "ADMIN"));
+        users.add(new User(2L, "Danna García", "danna@javeriana.edu.co", "buyer123", "BUYER"));
+        users.add(new User(3L, "Carlos Ramírez", "carlos@javeriana.edu.co", "buyer123", "BUYER"));
 
         // Books
         books.add(new Book(1, "Clean Code", "Robert C. Martin", "978-0132350884",
@@ -76,7 +76,13 @@ public class DataStore {
     public boolean registerUser(String name, String email, String password) {
         boolean exists = users.stream().anyMatch(u -> u.getEmail().equals(email));
         if (exists) return false;
-        users.add(new User(nextUserId++, name, email, password, "BUYER"));
+        users.add(User.builder()
+                .id(nextUserId++)
+                .name(name)
+                .email(email)
+                .password(password)
+                .role("BUYER")
+                .build());
         return true;
     }
 
@@ -86,8 +92,8 @@ public class DataStore {
 
     public List<User> getAllUsers() { return new ArrayList<>(users); }
 
-    public boolean deleteUser(int userId) {
-        return users.removeIf(u -> u.getId() == userId);
+    public boolean deleteUser(Long userId) {
+        return users.removeIf(u -> u.getId().equals(userId));
     }
 
     // ==================== BOOKS ====================
@@ -157,8 +163,26 @@ public class DataStore {
         if (cart.isEmpty() || currentUser == null) return null;
         List<CartItem> snapshot = new ArrayList<>(cart);
         double total = getCartTotal();
-        Order order = new Order(nextOrderId++, currentUser, snapshot, total);
+        
+        Order order = Order.builder()
+                .id(nextOrderId++)
+                .user(currentUser)
+                .total(total)
+                .status("COMPLETED")
+                .build();
+        
+        List<com.openlib.model.OrderItem> items = snapshot.stream()
+                .map(ci -> com.openlib.model.OrderItem.builder()
+                        .book(ci.getBook())
+                        .order(order)
+                        .quantity(ci.getQuantity())
+                        .priceAtPurchase(ci.getBook().getPrice())
+                        .build())
+                .collect(Collectors.toList());
+        
+        order.setItems(items);
         orders.add(order);
+        
         // increase downloads
         snapshot.forEach(item -> item.getBook().setDownloads(item.getBook().getDownloads() + 1));
         cart.clear();
@@ -167,7 +191,7 @@ public class DataStore {
 
     public List<Order> getOrdersByUser(User user) {
         return orders.stream()
-                .filter(o -> o.getUser().getId() == user.getId())
+                .filter(o -> o.getUser().getId().equals(user.getId()))
                 .collect(Collectors.toList());
     }
 

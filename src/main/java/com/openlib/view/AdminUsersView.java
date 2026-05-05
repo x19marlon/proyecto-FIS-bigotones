@@ -103,7 +103,7 @@ public class AdminUsersView {
         table.getStyleClass().add("table-view");
         table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_FLEX_LAST_COLUMN);
 
-        TableColumn<User, Integer> idCol = new TableColumn<>("ID");
+        TableColumn<User, Long> idCol = new TableColumn<>("ID");
         idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
         idCol.setMaxWidth(60);
 
@@ -128,14 +128,14 @@ public class AdminUsersView {
 
         TableColumn<User, Void> actionCol = new TableColumn<>("Acciones");
         actionCol.setMaxWidth(110);
-        int currentUserId = controller.getCurrentUserId();
+        Long currentUserId = controller.getCurrentUserId();
         actionCol.setCellFactory(col -> new TableCell<>() {
             final Button del = new Button("Eliminar");
             {
                 del.getStyleClass().add("btn-danger");
                 del.setOnAction(e -> {
                     User user = getTableView().getItems().get(getIndex());
-                    if (user.getId() == currentUserId) {
+                    if (user.getId().equals(currentUserId)) {
                         showAlert("No puedes eliminarte a ti mismo.");
                         return;
                     }

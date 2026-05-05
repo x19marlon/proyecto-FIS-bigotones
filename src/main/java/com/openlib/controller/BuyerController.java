@@ -47,13 +47,41 @@ public class BuyerController {
     // ---- Checkout ----
 
     public Order placeOrder() {
-        return store.placeOrder();
+        try {
+            if (store.getCurrentUser() == null) return null;
+            
+            List<Long> bookIds = store.getCart().stream()
+                    .map(item -> item.getBook().getId())
+                    .collect(java.util.stream.Collectors.toList());
+
+            com.openlib.controller.OrderController.OrderRequest request = 
+                    new com.openlib.controller.OrderController.OrderRequest();
+            request.setUserId(store.getCurrentUser().getId());
+            request.setBookIds(bookIds);
+
+            Order order = com.openlib.util.ApiClient.post("/orders", request, Order.class);
+            
+            // Sync local memory (optional, but good for current session)
+            store.clearCart();
+            return order;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    // ---- Library ----
-
     public List<Order> getMyOrders() {
-        return store.getOrdersByUser(store.getCurrentUser());
+        try {
+            if (store.getCurrentUser() == null) return java.util.Collections.emptyList();
+            
+            Order[] orders = com.openlib.util.ApiClient.get(
+                    "/orders/user/" + store.getCurrentUser().getId(), 
+                    Order[].class);
+            return java.util.Arrays.asList(orders);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return java.util.Collections.emptyList();
+        }
     }
 
     // ---- Navigation ----

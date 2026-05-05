@@ -45,14 +45,14 @@ public class AdminController {
 
     // ---- Users ----
     public List<User> getAllUsers() { return store.getAllUsers(); }
-    public boolean deleteUser(int userId) { return store.deleteUser(userId); }
+    public boolean deleteUser(Long userId) { return store.deleteUser(userId); }
 
     // ---- Orders ----
     public List<Order> getAllOrders() { return store.getAllOrders(); }
 
     // ---- Navigation ----
-    public int getCurrentUserId() {
-        return store.getCurrentUser() != null ? store.getCurrentUser().getId() : -1;
+    public Long getCurrentUserId() {
+        return store.getCurrentUser() != null ? store.getCurrentUser().getId() : -1L;
     }
 
     public void goToDashboard() { SceneManager.getInstance().showAdminDashboard(); }

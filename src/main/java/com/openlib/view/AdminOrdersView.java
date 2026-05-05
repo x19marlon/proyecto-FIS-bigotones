@@ -108,7 +108,7 @@ public class AdminOrdersView {
                 // Books list
                 HBox booksRow = new HBox(8);
                 booksRow.setAlignment(Pos.CENTER_LEFT);
-                for (CartItem item : order.getItems()) {
+                for (com.openlib.model.OrderItem item : order.getItems()) {
                     Label bookBadge = new Label("📗 " + item.getBook().getTitle());
                     bookBadge.setStyle("-fx-background-color: #21262D; -fx-text-fill: #F0F6FC; "
                             + "-fx-padding: 4 10; -fx-background-radius: 4; -fx-font-size: 12px;");

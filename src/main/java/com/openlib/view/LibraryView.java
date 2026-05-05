@@ -90,6 +90,7 @@ public class LibraryView {
 
             for (Order order : orders) {
                 VBox orderCard = ViewHelper.card(20);
+                orderCard.setMaxWidth(400);
 
                 HBox orderHeader = new HBox(12);
                 orderHeader.setAlignment(Pos.CENTER_LEFT);
@@ -108,7 +109,7 @@ public class LibraryView {
                 sep.setStyle("-fx-background-color: #30363D;");
 
                 FlowPane booksFlow = new FlowPane(12, 8);
-                for (CartItem item : order.getItems()) {
+                for (com.openlib.model.OrderItem item : order.getItems()) {
                     HBox bookRow = new HBox(10);
                     bookRow.setAlignment(Pos.CENTER_LEFT);
                     bookRow.setStyle("-fx-background-color: #21262D; -fx-background-radius: 6; -fx-padding: 10 14;");

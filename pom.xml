@@ -84,13 +84,13 @@
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
-                    <mainClass>com.openlib/com.openlib.MainApp</mainClass>
+                    <mainClass>com.openlib.MainApp</mainClass>
                 </configuration>
                 <executions>
                     <execution>
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.openlib/com.openlib.MainApp</mainClass>
+                            <mainClass>com.openlib.MainApp</mainClass>
                         </configuration>
                     </execution>
                 </executions>

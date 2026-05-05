@@ -199,7 +199,7 @@ public class CheckoutView {
 
         VBox orderCard = ViewHelper.card(20);
         orderCard.setMaxWidth(400);
-        for (CartItem item : order.getItems()) {
+        for (com.openlib.model.OrderItem item : order.getItems()) {
             Label lbl = new Label("📗 " + item.getBook().getTitle());
             lbl.setStyle("-fx-text-fill: #F0F6FC; -fx-font-size: 14px;");
             orderCard.getChildren().add(lbl);

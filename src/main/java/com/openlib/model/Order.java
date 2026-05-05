@@ -1,30 +1,39 @@
 package com.openlib.model;
 
+import jakarta.persistence.*;
+import lombok.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Entity
+@Table(name = "orders")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Order {
-    private int id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private User user;
-    private List<CartItem> items;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<OrderItem> items;
+
     private double total;
     private LocalDateTime date;
-    private String status;
+    private String status; // "COMPLETED", "CANCELLED"
 
-    public Order(int id, User user, List<CartItem> items, double total) {
-        this.id = id;
-        this.user = user;
-        this.items = items;
-        this.total = total;
+    @PrePersist
+    protected void onCreate() {
         this.date = LocalDateTime.now();
-        this.status = "COMPLETED";
+        if (this.status == null) {
+            this.status = "COMPLETED";
+        }
     }
-
-    public int getId() { return id; }
-    public User getUser() { return user; }
-    public List<CartItem> getItems() { return items; }
-    public double getTotal() { return total; }
-    public LocalDateTime getDate() { return date; }
-    public String getStatus() { return status; }
-    public void setStatus(String status) { this.status = status; }
 }
