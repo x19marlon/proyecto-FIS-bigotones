@@ -297,19 +297,7 @@ public class BuyerDashboardView {
         coverWrapper.setPadding(new Insets(40));
 
         VBox info = new VBox(15);
-        String categoryStr = book.getCategory() == null ? "GENERAL" : book.getCategory().toUpperCase();
-        Label cat = new Label(categoryStr);
-        cat.getStyleClass().add("product-badge");
-
-        // Status badge
-        if (book.getStatus() != null && !"APROBADO".equals(book.getStatus())) {
-            Label statusBadge = new Label(book.getStatus());
-            statusBadge.getStyleClass().add("badge-warn");
-            HBox badges = new HBox(6, cat, statusBadge);
-            info.getChildren().add(badges);
-        } else {
-            info.getChildren().add(cat);
-        }
+        info.getChildren().add(ViewHelper.renderCategories(book));
 
         String titleStr = book.getTitle() == null ? "Sin título" : book.getTitle();
         Label title = new Label(titleStr);

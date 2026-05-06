@@ -48,21 +48,21 @@ public class DataStore {
 
         // Books
         books.add(new Book(1, "Clean Code", "Robert C. Martin", "978-0132350884",
-                "Ingeniería", "A handbook of agile software craftsmanship.", 0.0, 4.8, 1240, "#2D6A4F"));
+                "Ingeniería, Software, Clean Code", "A handbook of agile software craftsmanship.", 0.0, 4.8, 1240, "#2D6A4F"));
         books.add(new Book(2, "Design Patterns", "Gang of Four", "978-0201633610",
-                "Ingeniería", "Elements of reusable object-oriented software.", 0.0, 4.7, 980, "#1A3C5E"));
+                "Ingeniería, Software, Patrones, Diseño", "Elements of reusable object-oriented software.", 0.0, 4.7, 980, "#1A3C5E"));
         books.add(new Book(3, "The Pragmatic Programmer", "Hunt & Thomas", "978-0135957059",
-                "Ingeniería", "Your journey to mastery in software development.", 0.0, 4.9, 1580, "#7B2D8B"));
+                "Ingeniería, Software, Programación", "Your journey to mastery in software development.", 0.0, 4.9, 1580, "#7B2D8B"));
         books.add(new Book(4, "Introduction to Algorithms", "Cormen et al.", "978-0262033848",
-                "Matemáticas", "Comprehensive guide to algorithms and data structures.", 0.0, 4.6, 2200, "#B5451B"));
+                "Matemáticas, Ciencia, Algoritmos", "Comprehensive guide to algorithms and data structures.", 0.0, 4.6, 2200, "#B5451B"));
         books.add(new Book(5, "You Don't Know JS", "Kyle Simpson", "978-1491904244",
-                "Programación", "Deep dive into JavaScript core mechanisms.", 0.0, 4.5, 870, "#C9882A"));
+                "Programación, JavaScript, Frontend", "Deep dive into JavaScript core mechanisms.", 0.0, 4.5, 870, "#C9882A"));
         books.add(new Book(6, "Sistemas Distribuidos", "Tanenbaum", "978-0132392273",
-                "Sistemas", "Principles and paradigms of distributed systems.", 0.0, 4.4, 760, "#1E6B6B"));
+                "Sistemas, Arquitectura, Redes", "Principles and paradigms of distributed systems.", 0.0, 4.4, 760, "#1E6B6B"));
         books.add(new Book(7, "Spring Boot in Action", "Craig Walls", "978-1617292545",
-                "Frameworks", "Building microservices with Spring Boot.", 0.0, 4.3, 640, "#5C2D91"));
+                "Frameworks, Java, Spring", "Building microservices with Spring Boot.", 0.0, 4.3, 640, "#5C2D91"));
         books.add(new Book(8, "Database Internals", "Alex Petrov", "978-1492040347",
-                "Bases de Datos", "A deep dive into how databases are built and work.", 0.0, 4.6, 520, "#1A3A1A"));
+                "Bases de Datos, Ingeniería, Backend", "A deep dive into how databases are built and work.", 0.0, 4.6, 520, "#1A3A1A"));
     }
 
     // ==================== USER ====================
@@ -107,14 +107,16 @@ public class DataStore {
                     String title = b.getTitle() == null ? "" : b.getTitle().toLowerCase();
                     String author = b.getAuthor() == null ? "" : b.getAuthor().toLowerCase();
                     String isbn = b.getIsbn() == null ? "" : b.getIsbn();
-                    String bCat = normalizeCategory(b.getCategory());
-
-                    boolean matchQ = q.isEmpty()
-                            || title.contains(q)
-                            || author.contains(q)
-                            || isbn.contains(q);
+                    String bCatRaw = b.getCategory() == null ? "" : b.getCategory();
+                    java.util.List<String> bCats = b.getCategoriesList();
+ 
+                     boolean matchQ = q.isEmpty()
+                             || title.contains(q)
+                             || author.contains(q)
+                             || isbn.contains(q);
+                    
                     boolean matchCat = category == null || category.equals("Todas")
-                            || bCat.equals(category);
+                            || bCats.contains(category);
                     return matchQ && matchCat;
                 })
                 .collect(Collectors.toList());
@@ -132,14 +134,14 @@ public class DataStore {
 
     public List<String> getCategories() {
         List<String> cats = books.stream()
-                .map(b -> normalizeCategory(b.getCategory()))
+                .flatMap(b -> b.getCategoriesList().stream())
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());
         
-        // Ensure "Sin categoría" is there if needed (normalizeCategory already handles null/blank)
+        // Ensure "Sin categoría" is there if needed
         // Move "Todas" to front
-        cats.remove("Todas"); // In case it was somehow in the list
+        cats.remove("Todas");
         cats.add(0, "Todas");
         return cats;
     }
@@ -148,11 +150,19 @@ public class DataStore {
         if (cat == null || cat.trim().isEmpty()) {
             return "Sin categoría";
         }
-        String trimmed = cat.trim();
-        if (trimmed.length() == 1) {
-            return trimmed.toUpperCase();
-        }
-        return trimmed.substring(0, 1).toUpperCase() + trimmed.substring(1).toLowerCase();
+        
+        // Split by comma and normalize each part
+        return java.util.Arrays.stream(cat.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .map(this::capitalize)
+                .collect(Collectors.joining(", "));
+    }
+
+    private String capitalize(String s) {
+        if (s == null || s.isEmpty()) return s;
+        if (s.length() == 1) return s.toUpperCase();
+        return s.substring(0, 1).toUpperCase() + s.substring(1).toLowerCase();
     }
 
     // ==================== CART ====================

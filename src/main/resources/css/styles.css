@@ -567,6 +567,15 @@
     -fx-text-fill: -accent-hover;
 }
 
+.badge-extra {
+    -fx-background-color: -accent;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-padding: 3 8;
+    -fx-background-radius: 20;
+}
+
 /* ---- Login / Auth ---- */
 .auth-container {
     -fx-background-color: -bg-main;

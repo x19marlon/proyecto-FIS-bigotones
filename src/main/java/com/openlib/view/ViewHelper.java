@@ -122,19 +122,7 @@ public class ViewHelper {
         VBox info = new VBox(8);
         info.getStyleClass().add("product-info-container");
 
-        String categoryStr = book.getCategory() == null || book.getCategory().isBlank() ? "Sin categoría" : book.getCategory();
-        Label cat = new Label(categoryStr);
-        cat.getStyleClass().add("product-badge");
-
-        // Status badge
-        if (book.getStatus() != null && !"APROBADO".equals(book.getStatus())) {
-            Label statusBadge = new Label(book.getStatus());
-            statusBadge.getStyleClass().add("badge-warn");
-            HBox badges = new HBox(6, cat, statusBadge);
-            info.getChildren().add(badges);
-        } else {
-            info.getChildren().add(cat);
-        }
+        info.getChildren().add(renderCategories(book));
 
         String titleStr = book.getTitle() == null ? "Sin título" : book.getTitle();
         Label title = new Label(titleStr);
@@ -172,6 +160,37 @@ public class ViewHelper {
         card.getChildren().addAll(coverContainer, info);
 
         return card;
+    }
+
+    public static HBox renderCategories(Book book) {
+        HBox container = new HBox(6);
+        container.setAlignment(Pos.CENTER_LEFT);
+
+        java.util.List<String> allCats = book.getCategoriesList();
+        int maxVisible = 3;
+        int visibleCount = Math.min(allCats.size(), maxVisible);
+
+        for (int i = 0; i < visibleCount; i++) {
+            Label catLbl = new Label(allCats.get(i));
+            catLbl.getStyleClass().add("product-badge");
+            container.getChildren().add(catLbl);
+        }
+
+        if (allCats.size() > maxVisible) {
+            int extra = allCats.size() - maxVisible;
+            Label extraLbl = new Label("+" + extra);
+            extraLbl.getStyleClass().add("badge-extra");
+            container.getChildren().add(extraLbl);
+        }
+
+        // Add status badge if not approved
+        if (book.getStatus() != null && !"APROBADO".equals(book.getStatus())) {
+            Label statusBadge = new Label(book.getStatus());
+            statusBadge.getStyleClass().add("badge-warn");
+            container.getChildren().add(statusBadge);
+        }
+
+        return container;
     }
 
     public static Label categoryChip(String text, boolean active) {

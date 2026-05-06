@@ -44,4 +44,18 @@ public class Book {
         this.coverColor = coverColor;
         this.status = "APROBADO"; // Default for legacy data
     }
+
+    /**
+     * Splits the category string into a list of individual categories.
+     * Handles comma-separated values and ensures each is trimmed.
+     */
+    public java.util.List<String> getCategoriesList() {
+        if (category == null || category.isBlank()) {
+            return java.util.List.of("Sin categoría");
+        }
+        return java.util.Arrays.stream(category.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(java.util.stream.Collectors.toList());
+    }
 }
