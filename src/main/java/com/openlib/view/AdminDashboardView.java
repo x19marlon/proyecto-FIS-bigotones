@@ -35,10 +35,10 @@ public class AdminDashboardView {
         sub.getStyleClass().add("sidebar-subtitle");
         sub.setPadding(new Insets(0, 6, 16, 6));
 
-        Button btnDash  = ViewHelper.sidebarBtn("📊  Dashboard", true,  controller::goToDashboard);
-        Button btnBooks = ViewHelper.sidebarBtn("📚  Libros",    false, controller::goToBooks);
-        Button btnUsers = ViewHelper.sidebarBtn("👥  Usuarios",  false, controller::goToUsers);
-        Button btnOrders= ViewHelper.sidebarBtn("🧾  Pedidos",   false, controller::goToOrders);
+        Button btnDash = ViewHelper.sidebarBtn("📊  Dashboard", true, controller::goToDashboard);
+        Button btnBooks = ViewHelper.sidebarBtn("📚  Libros", false, controller::goToBooks);
+        Button btnUsers = ViewHelper.sidebarBtn("👥  Usuarios", false, controller::goToUsers);
+        Button btnOrders = ViewHelper.sidebarBtn("🧾  Pedidos", false, controller::goToOrders);
 
         Region spacer = ViewHelper.vSpacer();
         Button btnLogout = new Button("⬅  Cerrar sesión");
@@ -72,9 +72,8 @@ public class AdminDashboardView {
         statsRow.setAlignment(Pos.CENTER_LEFT);
         statsRow.getChildren().addAll(
                 statCard("👥", "Usuarios registrados", String.valueOf(controller.getTotalUsers()), null),
-                statCard("📚", "Libros en catálogo",  String.valueOf(controller.getTotalBooks()), null),
-                statCard("🧾", "Pedidos realizados",  String.valueOf(controller.getTotalOrders()), null)
-        );
+                statCard("📚", "Libros en catálogo", String.valueOf(controller.getTotalBooks()), null),
+                statCard("🧾", "Pedidos realizados", String.valueOf(controller.getTotalOrders()), null));
 
         // Most downloaded
         Book topBook = controller.getMostDownloaded();

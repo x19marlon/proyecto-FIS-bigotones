@@ -25,14 +25,13 @@ public class AdminController {
                           String category, String description) {
         if (title == null || title.isBlank()) return "El título es requerido.";
         if (author == null || author.isBlank()) return "El autor es requerido.";
-        if (category == null || category.isBlank()) return "La categoría es requerida.";
 
         String[] colors = {"#2D6A4F","#1A3C5E","#7B2D8B","#B5451B","#C9882A","#1E6B6B","#5C2D91","#1A3A1A"};
         String color = colors[(int)(Math.random() * colors.length)];
 
         Book book = new Book(0, title.trim(), author.trim(),
                 isbn == null ? "N/A" : isbn.trim(),
-                category.trim(),
+                category == null ? "" : category.trim(),
                 description == null ? "" : description.trim(),
                 0.0, 0.0, 0, color);
         store.addBook(book);

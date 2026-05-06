@@ -122,7 +122,7 @@ public class ViewHelper {
         VBox info = new VBox(8);
         info.getStyleClass().add("product-info-container");
 
-        String categoryStr = book.getCategory() == null ? "GENERAL" : book.getCategory().toUpperCase();
+        String categoryStr = book.getCategory() == null || book.getCategory().isBlank() ? "Sin categoría" : book.getCategory();
         Label cat = new Label(categoryStr);
         cat.getStyleClass().add("product-badge");
 

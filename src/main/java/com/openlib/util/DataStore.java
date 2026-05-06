@@ -107,7 +107,7 @@ public class DataStore {
                     String title = b.getTitle() == null ? "" : b.getTitle().toLowerCase();
                     String author = b.getAuthor() == null ? "" : b.getAuthor().toLowerCase();
                     String isbn = b.getIsbn() == null ? "" : b.getIsbn();
-                    String bCat = b.getCategory() == null ? "" : b.getCategory();
+                    String bCat = normalizeCategory(b.getCategory());
 
                     boolean matchQ = q.isEmpty()
                             || title.contains(q)
@@ -121,6 +121,7 @@ public class DataStore {
     }
 
     public void addBook(Book book) {
+        book.setCategory(normalizeCategory(book.getCategory()));
         book.setId((long) (books.size() + 1));
         books.add(book);
     }
@@ -131,12 +132,27 @@ public class DataStore {
 
     public List<String> getCategories() {
         List<String> cats = books.stream()
-                .map(Book::getCategory)
+                .map(b -> normalizeCategory(b.getCategory()))
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());
+        
+        // Ensure "Sin categoría" is there if needed (normalizeCategory already handles null/blank)
+        // Move "Todas" to front
+        cats.remove("Todas"); // In case it was somehow in the list
         cats.add(0, "Todas");
         return cats;
+    }
+
+    private String normalizeCategory(String cat) {
+        if (cat == null || cat.trim().isEmpty()) {
+            return "Sin categoría";
+        }
+        String trimmed = cat.trim();
+        if (trimmed.length() == 1) {
+            return trimmed.toUpperCase();
+        }
+        return trimmed.substring(0, 1).toUpperCase() + trimmed.substring(1).toLowerCase();
     }
 
     // ==================== CART ====================

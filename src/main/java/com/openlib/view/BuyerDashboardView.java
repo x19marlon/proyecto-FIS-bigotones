@@ -17,6 +17,7 @@ public class BuyerDashboardView {
     private final BuyerController controller = new BuyerController();
     private FlowPane booksGrid;
     private TextField searchField;
+    private HBox chipsContainer;
     private ComboBox<String> categoryCombo;
     private ComboBox<String> sortCombo;
     private ComboBox<Integer> pageSizeCombo;
@@ -93,24 +94,16 @@ public class BuyerDashboardView {
         searchField.getStyleClass().add("input-field");
         searchField.setPrefWidth(400);
 
-        HBox chips = new HBox(10);
-        chips.setAlignment(Pos.CENTER_LEFT);
-        String currentCat = categoryCombo == null ? "Todas" : categoryCombo.getValue();
-        for (String cat : controller.getCategories()) {
-            Label chip = ViewHelper.categoryChip(cat, cat.equals(currentCat));
-            chip.setOnMouseClicked(e -> {
-                categoryCombo.setValue(cat);
-                refreshBooks(searchField.getText(), cat);
-            });
-            chips.getChildren().add(chip);
-        }
-
+        chipsContainer = new HBox(10);
+        chipsContainer.setAlignment(Pos.CENTER_LEFT);
+        
         // Hidden combo for logic compatibility
         categoryCombo = new ComboBox<>();
-        categoryCombo.getItems().addAll(controller.getCategories());
         categoryCombo.setValue("Todas");
         categoryCombo.setVisible(false);
         categoryCombo.setManaged(false);
+
+        refreshChips();
 
         // Sort Combo
         sortCombo = new ComboBox<>();
@@ -120,7 +113,7 @@ public class BuyerDashboardView {
         sortCombo.setPrefWidth(180);
         sortCombo.setOnAction(e -> applyFilters());
 
-        controlBar.getChildren().addAll(searchField, chips, ViewHelper.spacer(), sortCombo, categoryCombo);
+        controlBar.getChildren().addAll(searchField, chipsContainer, ViewHelper.spacer(), sortCombo, categoryCombo);
 
         searchField.setOnAction(e -> applyFilters());
 
@@ -149,7 +142,26 @@ public class BuyerDashboardView {
 
     private void applyFilters() {
         currentPage = 1;
+        refreshChips(); // Update chips in case categories changed
         refreshBooks(searchField.getText(), categoryCombo.getValue());
+    }
+
+    private void refreshChips() {
+        if (chipsContainer == null) return;
+        chipsContainer.getChildren().clear();
+        String currentCat = categoryCombo == null ? "Todas" : categoryCombo.getValue();
+        
+        List<String> categories = controller.getCategories();
+        categoryCombo.getItems().setAll(categories);
+        
+        for (String cat : categories) {
+            Label chip = ViewHelper.categoryChip(cat, cat.equals(currentCat));
+            chip.setOnMouseClicked(e -> {
+                categoryCombo.setValue(cat);
+                applyFilters();
+            });
+            chipsContainer.getChildren().add(chip);
+        }
     }
 
     private void refreshBooks(String query, String category) {
