@@ -22,41 +22,53 @@ public class CheckoutView {
     public Scene buildScene() {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("pane-root");
-        root.setLeft(buildSidebar());
+
+        // Header
+        HBox header = ViewHelper.buildEcommerceHeader(
+                null, null,
+                controller.getCartCount(),
+                controller::goToCart
+        );
+        root.setTop(header);
+
+        // Checkout sidebar (uses step indicators instead of nav)
+        root.setLeft(buildCheckoutSidebar());
         root.setCenter(buildCheckoutForm());
 
-        Scene scene = new Scene(root, 1100, 720);
+        Scene scene = new Scene(root, 1200, 780);
         scene.getStylesheets().add(ViewHelper.CSS_PATH);
         return scene;
     }
 
-    private VBox buildSidebar() {
+    private VBox buildCheckoutSidebar() {
         VBox sidebar = new VBox(6);
         sidebar.getStyleClass().add("sidebar");
         sidebar.setPadding(new Insets(0, 10, 20, 10));
 
-        Label logo = new Label("📚 OpenLib");
-        logo.getStyleClass().add("sidebar-title");
-        logo.setPadding(new Insets(24, 6, 2, 6));
-        Label sub = new Label("Checkout");
-        sub.getStyleClass().add("sidebar-subtitle");
-        sub.setPadding(new Insets(0, 6, 16, 6));
+        Label sectionLabel = new Label("PROCESO DE COMPRA");
+        sectionLabel.getStyleClass().add("sidebar-section-label");
 
         Label step1 = new Label("✅  1. Carrito");
-        step1.setStyle("-fx-text-fill: #2F5D62; -fx-font-size: 13px; -fx-padding: 8 16;");
+        step1.setStyle("-fx-text-fill: #2F5D62; -fx-font-size: 13px; -fx-padding: 10 16;");
         Label step2 = new Label("➡  2. Checkout");
-        step2.setStyle("-fx-text-fill: #2E2E2E; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8 16;");
+        step2.setStyle("-fx-text-fill: #2E2E2E; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 10 16;");
         Label step3 = new Label("◯  3. Confirmación");
-        step3.setStyle("-fx-text-fill: #6E7681; -fx-font-size: 13px; -fx-padding: 8 16;");
+        step3.setStyle("-fx-text-fill: #6E7681; -fx-font-size: 13px; -fx-padding: 10 16;");
+
+        // Divider
+        Region divider = new Region();
+        divider.getStyleClass().add("sidebar-divider");
+        divider.setMinHeight(1);
+        divider.setMaxHeight(1);
+
+        Label navSection = new Label("NAVEGACIÓN");
+        navSection.getStyleClass().add("sidebar-section-label");
 
         Region spacer = ViewHelper.vSpacer();
         Button btnOrders = ViewHelper.sidebarBtn("🧾  Mis Pedidos", false, controller::goToOrderHistory);
-        Button backBtn = new Button("← Volver al carrito");
-        backBtn.getStyleClass().add("sidebar-btn");
-        backBtn.setMaxWidth(Double.MAX_VALUE);
-        backBtn.setOnAction(e -> controller.goToCart());
+        Button backBtn = ViewHelper.sidebarBtn("← Volver al carrito", false, controller::goToCart);
 
-        sidebar.getChildren().addAll(logo, sub, step1, step2, step3, spacer, btnOrders, backBtn);
+        sidebar.getChildren().addAll(sectionLabel, step1, step2, step3, divider, navSection, btnOrders, backBtn, spacer);
         return sidebar;
     }
 

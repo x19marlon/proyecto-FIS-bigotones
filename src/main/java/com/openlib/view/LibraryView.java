@@ -1,7 +1,6 @@
 package com.openlib.view;
 
 import com.openlib.controller.BuyerController;
-import com.openlib.model.CartItem;
 import com.openlib.model.Order;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -19,39 +18,33 @@ public class LibraryView {
     public Scene buildScene() {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("pane-root");
-        root.setLeft(buildSidebar());
+
+        // Header
+        HBox header = ViewHelper.buildEcommerceHeader(
+                null, null,
+                controller.getCartCount(),
+                controller::goToCart
+        );
+        root.setTop(header);
+
+        // Sidebar
+        VBox sidebar = ViewHelper.buildModernSidebar(
+                "library",
+                controller::goToCatalog,
+                controller::goToCart,
+                controller::goToOrderHistory,
+                controller::goToLibrary,
+                controller::logout,
+                controller.getCartCount()
+        );
+        root.setLeft(sidebar);
+
+        // Content
         root.setCenter(buildContent());
 
-        Scene scene = new Scene(root, 1100, 720);
+        Scene scene = new Scene(root, 1200, 780);
         scene.getStylesheets().add(ViewHelper.CSS_PATH);
         return scene;
-    }
-
-    private VBox buildSidebar() {
-        VBox sidebar = new VBox(6);
-        sidebar.getStyleClass().add("sidebar");
-        sidebar.setPadding(new Insets(0, 10, 20, 10));
-
-        Label logo = new Label("📚 OpenLib");
-        logo.getStyleClass().add("sidebar-title");
-        logo.setPadding(new Insets(24, 6, 2, 6));
-        Label sub = new Label("Módulo Buyer");
-        sub.getStyleClass().add("sidebar-subtitle");
-        sub.setPadding(new Insets(0, 6, 16, 6));
-
-        Button btnCatalog = ViewHelper.sidebarBtn("🏠  Catálogo", false, controller::goToCatalog);
-        Button btnCart    = ViewHelper.sidebarBtn("🛒  Carrito", false, controller::goToCart);
-        Button btnOrders  = ViewHelper.sidebarBtn("🧾  Mis Pedidos", false, controller::goToOrderHistory);
-        Button btnLibrary = ViewHelper.sidebarBtn("📖  Mi Biblioteca", true, controller::goToLibrary);
-
-        Region spacer = ViewHelper.vSpacer();
-        Button btnLogout = new Button("⬅  Cerrar sesión");
-        btnLogout.getStyleClass().add("logout-btn");
-        btnLogout.setMaxWidth(Double.MAX_VALUE);
-        btnLogout.setOnAction(e -> controller.logout());
-
-        sidebar.getChildren().addAll(logo, sub, btnCatalog, btnCart, btnLibrary, spacer, btnLogout);
-        return sidebar;
     }
 
     private VBox buildContent() {

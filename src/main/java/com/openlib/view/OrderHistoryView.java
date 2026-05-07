@@ -20,44 +20,33 @@ public class OrderHistoryView {
     public Scene buildScene() {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("pane-root");
-        root.setLeft(buildSidebar());
+
+        // Header
+        HBox header = ViewHelper.buildEcommerceHeader(
+                null, null,
+                controller.getCartCount(),
+                controller::goToCart
+        );
+        root.setTop(header);
+
+        // Sidebar
+        VBox sidebar = ViewHelper.buildModernSidebar(
+                "orders",
+                controller::goToCatalog,
+                controller::goToCart,
+                controller::goToOrderHistory,
+                controller::goToLibrary,
+                controller::logout,
+                controller.getCartCount()
+        );
+        root.setLeft(sidebar);
+
+        // Content
         root.setCenter(buildContent());
 
-        Scene scene = new Scene(root, 1100, 720);
+        Scene scene = new Scene(root, 1200, 780);
         scene.getStylesheets().add(ViewHelper.CSS_PATH);
         return scene;
-    }
-
-    private VBox buildSidebar() {
-        VBox sidebar = new VBox(6);
-        sidebar.getStyleClass().add("sidebar");
-        sidebar.setPadding(new Insets(0, 10, 20, 10));
-
-        Label logo = new Label("📚 OpenLib");
-        logo.getStyleClass().add("sidebar-title");
-        logo.setPadding(new Insets(24, 6, 2, 6));
-
-        String userName = DataStore.getInstance().getCurrentUser().getName().split(" ")[0];
-        Label sub = new Label("Hola, " + userName + " 👋");
-        sub.getStyleClass().add("sidebar-subtitle");
-        sub.setPadding(new Insets(0, 6, 16, 6));
-
-        int cartCount = controller.getCartCount();
-        String cartLabel = "🛒  Carrito" + (cartCount > 0 ? "  (" + cartCount + ")" : "");
-
-        Button btnCatalog = ViewHelper.sidebarBtn("🏠  Catálogo", false, controller::goToCatalog);
-        Button btnCart    = ViewHelper.sidebarBtn(cartLabel, false, controller::goToCart);
-        Button btnOrders  = ViewHelper.sidebarBtn("🧾  Mis Pedidos", true, controller::goToOrderHistory);
-        Button btnLibrary = ViewHelper.sidebarBtn("📖  Mi Biblioteca", false, controller::goToLibrary);
-
-        Region spacer = ViewHelper.vSpacer();
-        Button btnLogout = new Button("⬅  Cerrar sesión");
-        btnLogout.getStyleClass().add("logout-btn");
-        btnLogout.setMaxWidth(Double.MAX_VALUE);
-        btnLogout.setOnAction(e -> controller.logout());
-
-        sidebar.getChildren().addAll(logo, sub, btnCatalog, btnCart, btnOrders, btnLibrary, spacer, btnLogout);
-        return sidebar;
     }
 
     private VBox buildContent() {
@@ -67,7 +56,7 @@ public class OrderHistoryView {
         HBox topbar = new HBox();
         topbar.getStyleClass().add("topbar");
         topbar.setAlignment(Pos.CENTER_LEFT);
-        Label title = new Label("Mi Historial de Compras");
+        Label title = new Label("🧾 Mi Historial de Compras");
         title.getStyleClass().add("topbar-title");
         topbar.getChildren().add(title);
 
