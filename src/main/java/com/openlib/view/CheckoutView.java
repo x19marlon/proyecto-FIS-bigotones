@@ -31,45 +31,39 @@ public class CheckoutView {
         );
         root.setTop(header);
 
-        // Checkout sidebar (uses step indicators instead of nav)
-        root.setLeft(buildCheckoutSidebar());
-        root.setCenter(buildCheckoutForm());
+        // Content (No sidebar)
+        VBox checkoutContent = new VBox(0);
+        checkoutContent.getChildren().addAll(buildHorizontalStepper(), buildCheckoutForm());
+        root.setCenter(checkoutContent);
 
         Scene scene = new Scene(root, 1200, 780);
         scene.getStylesheets().add(ViewHelper.CSS_PATH);
         return scene;
     }
 
-    private VBox buildCheckoutSidebar() {
-        VBox sidebar = new VBox(6);
-        sidebar.getStyleClass().add("sidebar");
-        sidebar.setPadding(new Insets(0, 10, 20, 10));
+    private HBox buildHorizontalStepper() {
+        HBox stepper = new HBox(40);
+        stepper.setAlignment(Pos.CENTER);
+        stepper.setPadding(new Insets(24, 0, 12, 0));
+        stepper.setStyle("-fx-background-color: #FDFBFA; -fx-border-color: #EDE3D2; -fx-border-width: 0 0 1 0;");
 
-        Label sectionLabel = new Label("PROCESO DE COMPRA");
-        sectionLabel.getStyleClass().add("sidebar-section-label");
+        Label step1 = new Label("✅ 1. Carrito");
+        step1.setStyle("-fx-text-fill: #2F5D62; -fx-font-weight: bold;");
+        
+        Label line1 = new Label("———");
+        line1.setStyle("-fx-text-fill: #EDE3D2;");
 
-        Label step1 = new Label("✅  1. Carrito");
-        step1.setStyle("-fx-text-fill: #2F5D62; -fx-font-size: 13px; -fx-padding: 10 16;");
-        Label step2 = new Label("➡  2. Checkout");
-        step2.setStyle("-fx-text-fill: #2E2E2E; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 10 16;");
-        Label step3 = new Label("◯  3. Confirmación");
-        step3.setStyle("-fx-text-fill: #6E7681; -fx-font-size: 13px; -fx-padding: 10 16;");
+        Label step2 = new Label("🔵 2. Checkout");
+        step2.setStyle("-fx-text-fill: #2E2E2E; -fx-font-weight: bold;");
 
-        // Divider
-        Region divider = new Region();
-        divider.getStyleClass().add("sidebar-divider");
-        divider.setMinHeight(1);
-        divider.setMaxHeight(1);
+        Label line2 = new Label("———");
+        line2.setStyle("-fx-text-fill: #EDE3D2;");
 
-        Label navSection = new Label("NAVEGACIÓN");
-        navSection.getStyleClass().add("sidebar-section-label");
+        Label step3 = new Label("◯ 3. Confirmación");
+        step3.setStyle("-fx-text-fill: #6E7681;");
 
-        Region spacer = ViewHelper.vSpacer();
-        Button btnOrders = ViewHelper.sidebarBtn("🧾  Mis Pedidos", false, controller::goToOrderHistory);
-        Button backBtn = ViewHelper.sidebarBtn("← Volver al carrito", false, controller::goToCart);
-
-        sidebar.getChildren().addAll(sectionLabel, step1, step2, step3, divider, navSection, btnOrders, backBtn, spacer);
-        return sidebar;
+        stepper.getChildren().addAll(step1, line1, step2, line2, step3);
+        return stepper;
     }
 
     private HBox buildCheckoutForm() {

@@ -28,19 +28,7 @@ public class CartView {
         );
         root.setTop(header);
 
-        // Sidebar
-        VBox sidebar = ViewHelper.buildModernSidebar(
-                "cart",
-                controller::goToCatalog,
-                controller::goToCart,
-                controller::goToOrderHistory,
-                controller::goToLibrary,
-                controller::logout,
-                controller.getCartCount()
-        );
-        root.setLeft(sidebar);
-
-        // Content
+        // Content (No sidebar)
         root.setCenter(buildContent());
 
         Scene scene = new Scene(root, 1200, 780);

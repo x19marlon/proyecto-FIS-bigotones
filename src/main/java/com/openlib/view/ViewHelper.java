@@ -2,9 +2,7 @@ package com.openlib.view;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -91,96 +89,47 @@ public class ViewHelper {
             }
         } catch (Exception ignored) {}
 
-        VBox userInfo = new VBox(0);
-        userInfo.setAlignment(Pos.CENTER_LEFT);
-        Label greeting = new Label("Hola, " + userName);
-        greeting.getStyleClass().add("ecom-user-greeting");
-        Label accountLabel = new Label("Mi Cuenta ▾");
-        accountLabel.getStyleClass().add("ecom-user-name");
-        userInfo.getChildren().addAll(greeting, accountLabel);
+        // My Account Dropdown
+        MenuButton accountMenu = new MenuButton("Hola, " + userName + "\nMi Cuenta ▾");
+        accountMenu.getStyleClass().add("ecom-user-menu");
+        
+        MenuItem profile = new MenuItem("👤 Mi Perfil");
+        profile.setOnAction(e -> {
+            // SceneManager.getInstance().showProfile(); 
+            // For now, let's just show a simple profile alert or navigate if we implement it
+            com.openlib.util.SceneManager.getInstance().showProfile();
+        });
+
+        MenuItem orders = new MenuItem("🧾 Mis Pedidos");
+        orders.setOnAction(e -> com.openlib.util.SceneManager.getInstance().showOrderHistory());
+
+        MenuItem library = new MenuItem("📖 Mi Biblioteca");
+        library.setOnAction(e -> com.openlib.util.SceneManager.getInstance().showLibrary());
+
+        MenuItem logout = new MenuItem("⬅ Cerrar sesión");
+        logout.setOnAction(e -> new com.openlib.controller.AuthController().logout());
+
+        accountMenu.getItems().addAll(profile, orders, library, new SeparatorMenuItem(), logout);
 
         // Cart button
         Button cartBtn = new Button("🛒 Carrito");
         cartBtn.getStyleClass().add("ecom-header-action");
+        cartBtn.setOnAction(e -> { if (onCartClick != null) onCartClick.run(); });
+
         if (cartCount > 0) {
             Label badge = new Label(String.valueOf(cartCount));
             badge.getStyleClass().add("ecom-cart-badge");
-            HBox cartWrapper = new HBox(4, cartBtn, badge);
-            cartWrapper.setAlignment(Pos.CENTER);
-            cartBtn.setOnAction(e -> { if (onCartClick != null) onCartClick.run(); });
-            userZone.getChildren().addAll(userInfo, cartWrapper);
+            StackPane cartContainer = new StackPane(cartBtn, badge);
+            StackPane.setAlignment(badge, Pos.TOP_RIGHT);
+            badge.setTranslateX(8);
+            badge.setTranslateY(-8);
+            userZone.getChildren().addAll(accountMenu, cartContainer);
         } else {
-            cartBtn.setOnAction(e -> { if (onCartClick != null) onCartClick.run(); });
-            userZone.getChildren().addAll(userInfo, cartBtn);
+            userZone.getChildren().addAll(accountMenu, cartBtn);
         }
 
         header.getChildren().addAll(logoBox, searchBox, userZone);
         return header;
-    }
-
-    // ==================== MODERN SIDEBAR ====================
-
-    /**
-     * Builds a modern sidebar with icons and section labels.
-     * @param activeItem The currently active menu item identifier
-     * @param onCatalog Navigate to catalog
-     * @param onCart Navigate to cart
-     * @param onOrders Navigate to orders
-     * @param onLibrary Navigate to library
-     * @param onLogout Logout action
-     * @param cartCount Current cart item count
-     */
-    public static VBox buildModernSidebar(String activeItem, Runnable onCatalog,
-                                           Runnable onCart, Runnable onOrders,
-                                           Runnable onLibrary, Runnable onLogout,
-                                           int cartCount) {
-        VBox sidebar = new VBox(2);
-        sidebar.getStyleClass().add("sidebar");
-        sidebar.setPadding(new Insets(0, 10, 16, 10));
-
-        // Section: Navigation
-        Label navSection = new Label("NAVEGACIÓN");
-        navSection.getStyleClass().add("sidebar-section-label");
-
-        String cartLabel = "🛒  Carrito" + (cartCount > 0 ? "  (" + cartCount + ")" : "");
-
-        Button btnCatalog = sidebarBtn("🏠  Catálogo", "catalog".equals(activeItem), onCatalog);
-        Button btnCart    = sidebarBtn(cartLabel, "cart".equals(activeItem), onCart);
-        Button btnOrders  = sidebarBtn("🧾  Mis Pedidos", "orders".equals(activeItem), onOrders);
-        Button btnLibrary = sidebarBtn("📖  Mi Biblioteca", "library".equals(activeItem), onLibrary);
-
-        // Divider
-        Region divider = new Region();
-        divider.getStyleClass().add("sidebar-divider");
-        divider.setMinHeight(1);
-        divider.setMaxHeight(1);
-
-        // Section: Account
-        Label accountSection = new Label("CUENTA");
-        accountSection.getStyleClass().add("sidebar-section-label");
-
-        Button btnProfile = sidebarBtn("👤  Mi Perfil", "profile".equals(activeItem), () -> {
-            // TODO: Navigate to profile view when implemented
-        });
-
-        Region spacer = vSpacer();
-
-        Button btnLogout = new Button("⬅  Cerrar sesión");
-        btnLogout.getStyleClass().add("logout-btn");
-        btnLogout.setMaxWidth(Double.MAX_VALUE);
-        btnLogout.setOnAction(e -> onLogout.run());
-
-        sidebar.getChildren().addAll(
-                navSection,
-                btnCatalog, btnCart, btnOrders, btnLibrary,
-                divider,
-                accountSection,
-                btnProfile,
-                spacer,
-                btnLogout
-        );
-
-        return sidebar;
     }
 
     // ==================== CATEGORY NAV BAR ====================

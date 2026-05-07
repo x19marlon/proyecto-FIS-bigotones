@@ -110,6 +110,59 @@
     -fx-text-fill: -text-light;
 }
 
+/* New User Menu Styles */
+.ecom-user-menu {
+    -fx-background-color: transparent;
+    -fx-text-fill: -text-light;
+    -fx-font-size: 13px;
+    -fx-font-weight: 600;
+    -fx-padding: 4 12;
+    -fx-background-radius: 6;
+    -fx-border-width: 0;
+    -fx-cursor: hand;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.ecom-user-menu:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+}
+
+.ecom-user-menu .label {
+    -fx-text-fill: -text-light;
+    -fx-text-alignment: left;
+}
+
+.ecom-user-menu .context-menu {
+    -fx-background-color: -bg-card;
+    -fx-border-color: -border-color;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 15, 0, 0, 5);
+}
+
+.ecom-user-menu .menu-item {
+    -fx-padding: 10 20;
+    -fx-pref-width: 180;
+}
+
+.ecom-user-menu .menu-item .label {
+    -fx-text-fill: -text-main;
+    -fx-font-size: 14px;
+}
+
+.ecom-user-menu .menu-item:focused {
+    -fx-background-color: -bg-surface;
+}
+
+.ecom-user-menu .menu-item:focused .label {
+    -fx-text-fill: -primary;
+}
+
+.ecom-user-menu .separator-menu-item .separator {
+    -fx-padding: 4 0;
+}
+
 .ecom-header-action {
     -fx-background-color: transparent;
     -fx-text-fill: -text-light;
