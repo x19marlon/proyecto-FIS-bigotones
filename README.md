@@ -31,12 +31,14 @@ El desarrollo de OpenLib Market se centra en los siguientes pilares:
 *   **Diseño Responsivo y UX:** Interfaz pulida con CSS personalizado, micro-animaciones y navegación fluida entre escenas.
 *   **Sincronización Backend:** Integración real con servicios REST para persistencia y validación de datos.
 *   **Historial de Compras:** Sección dedicada para que el usuario consulte sus transacciones y acceda a sus comprobantes.
+*   **Navegación Moderna:** Centralización de la navegación en un header superior con menú desplegable "Mi Cuenta" (Perfil, Pedidos, Biblioteca).
+*   **Gestión de Perfil:** Nueva interfaz para visualizar los datos personales del usuario autenticado.
+*   **Layout Full-Width:** Eliminación de sidebars para maximizar el espacio de visualización en el catálogo y pantallas principales.
+*   **Stepper de Checkout:** Proceso de compra guiado mediante un indicador de progreso horizontal profesional.
 
 ### Funcionalidades Pendientes / Roadmap
-*   **Autocompletado de Datos:** Carga automática de perfiles de usuario en el checkout para agilizar el proceso.
 *   **Descarga Segura:** Implementación de acceso a archivos mediante URLs únicas y temporales.
 *   **Filtrado por Categorías:** Arreglar la funcionalidad de categorías para que, al seleccionar una categoría específica, se filtren y muestren correctamente los libros pertenecientes a esa categoría.
-*   **Paginación del Lado del Servidor:** Optimización del catálogo para soportar miles de registros sin degradación de rendimiento.
 *   **Validación Avanzada de Datos:** Refinamiento de las reglas de negocio para facturación y estados de pedido.
 
 ---
