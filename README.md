@@ -10,6 +10,44 @@ La plataforma permite a los usuarios institucionales explorar un catálogo curad
 
 ---
 
+## 🏗️ Arquitectura y Funcionamiento
+
+El proyecto sigue una arquitectura de **Cliente-Servidor** desacoplada, lo que permite que el frontend y el backend evolucionen de forma independiente.
+
+### Diagrama de Arquitectura
+```mermaid
+graph TD
+    subgraph Frontend
+        UI[Interfaz de Usuario]
+        SM[SceneManager]
+        BC[Controllers Cliente]
+    end
+
+    subgraph Backend
+        RC[REST Controllers]
+        SRV[Services]
+        REP[Repositories]
+    end
+
+    DB[(H2 Database)]
+
+    UI --- BC
+    BC --- RC
+    RC --- SRV
+    SRV --- REP
+    REP --- DB
+```
+
+### ¿Cómo funciona la App?
+
+1.  **Capa de Presentación (JavaFX):** El usuario interactúa con vistas dinámicas optimizadas. El `SceneManager` gestiona el cambio de pantallas, mientras que los `Controllers` de cliente capturan los eventos (clics, búsquedas) y orquestan la UI.
+2.  **Comunicación API REST:** El frontend se comunica con el servidor mediante peticiones HTTP. Esto permite que la aplicación sea escalable y que el backend pueda servir a otros clientes en el futuro.
+3.  **Lógica de Negocio (Spring Boot):** El backend actúa como el "cerebro" de la aplicación. Procesa las solicitudes, aplica reglas de validación y gestiona las transacciones de compra.
+4.  **Persistencia de Datos:** Se utiliza **Spring Data JPA** para interactuar con una base de datos H2. Toda la información de libros, usuarios y pedidos se gestiona mediante repositorios que garantizan la integridad de los datos.
+
+---
+
+
 ## 🎯 Objetivos del Proyecto
 
 El desarrollo de OpenLib Market se centra en los siguientes pilares:
