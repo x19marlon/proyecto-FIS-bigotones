@@ -30,11 +30,11 @@ public class DataInitializer {
                 "Joshua Bloch", "Brian Goetz", "Martin Fowler"
             };
             String[] categories = {
-                "Literatura", "Software", "Software",
-                "Software", "Ciencia", "Ciencia",
-                "Software", "Gestión", "Software",
-                "Software", "Software", "Software",
-                "Software", "Software", "Software"
+                "Literatura, Clásico, Aventura", "Software, Ingeniería, Clean Code", "Software, Patrones, Diseño",
+                "Software, Programación, Pragmático", "Ciencia, Algoritmos, Matemáticas", "Ciencia, IA, Robótica",
+                "Software, Entrevistas, Carrera", "Gestión, Ingeniería, Clásico", "Software, Refactorización, Diseño",
+                "Software, Construcción, Calidad", "Software, TDD, Agile", "Software, DDD, Arquitectura",
+                "Software, Java, Backend", "Software, Java, Concurrencia", "Software, Arquitectura, Enterprise"
             };
 
             for (int i = 0; i < titles.length; i++) {

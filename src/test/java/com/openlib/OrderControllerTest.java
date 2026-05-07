@@ -2,6 +2,7 @@ package com.openlib;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openlib.controller.OrderController.OrderRequest;
+import com.openlib.service.OrderService.OrderItemRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -29,7 +30,15 @@ public class OrderControllerTest {
     public void shouldCreateOrderSuccessfully() throws Exception {
         OrderRequest request = new OrderRequest();
         request.setUserId(1L); // The seeded user from DataInitializer
-        request.setBookIds(Arrays.asList(1L, 2L));
+        OrderItemRequest item1 = new OrderItemRequest();
+        item1.setBookId(1L);
+        item1.setQuantity(1);
+
+        OrderItemRequest item2 = new OrderItemRequest();
+        item2.setBookId(2L);
+        item2.setQuantity(1);
+
+        request.setItems(Arrays.asList(item1, item2));
 
         mockMvc.perform(post("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -44,7 +53,11 @@ public class OrderControllerTest {
     public void shouldReturnErrorWhenUserNotFound() throws Exception {
         OrderRequest request = new OrderRequest();
         request.setUserId(999L);
-        request.setBookIds(Arrays.asList(1L));
+        OrderItemRequest item1 = new OrderItemRequest();
+        item1.setBookId(1L);
+        item1.setQuantity(1);
+
+        request.setItems(Arrays.asList(item1));
 
         mockMvc.perform(post("/api/orders")
                 .contentType(MediaType.APPLICATION_JSON)

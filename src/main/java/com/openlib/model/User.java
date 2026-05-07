@@ -24,14 +24,4 @@ public class User {
     private String password;
     private String role; // "BUYER" | "ADMIN"
     private String address;
-
-    // Backward compatibility for old UI if needed
-    public User(Long id, String name, String email, String password, String role, String address) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.address = address;
-    }
 }

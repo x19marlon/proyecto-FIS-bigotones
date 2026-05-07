@@ -22,42 +22,48 @@ public class CheckoutView {
     public Scene buildScene() {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("pane-root");
-        root.setLeft(buildSidebar());
-        root.setCenter(buildCheckoutForm());
 
-        Scene scene = new Scene(root, 1100, 720);
+        // Header
+        HBox header = ViewHelper.buildEcommerceHeader(
+                null, null,
+                controller.getCartCount(),
+                controller::goToCart
+        );
+        root.setTop(header);
+
+        // Content (No sidebar)
+        VBox checkoutContent = new VBox(0);
+        checkoutContent.getChildren().addAll(buildHorizontalStepper(), buildCheckoutForm());
+        root.setCenter(checkoutContent);
+
+        Scene scene = new Scene(root, 1200, 780);
         scene.getStylesheets().add(ViewHelper.CSS_PATH);
         return scene;
     }
 
-    private VBox buildSidebar() {
-        VBox sidebar = new VBox(6);
-        sidebar.getStyleClass().add("sidebar");
-        sidebar.setPadding(new Insets(0, 10, 20, 10));
+    private HBox buildHorizontalStepper() {
+        HBox stepper = new HBox(40);
+        stepper.setAlignment(Pos.CENTER);
+        stepper.setPadding(new Insets(24, 0, 12, 0));
+        stepper.setStyle("-fx-background-color: #FDFBFA; -fx-border-color: #EDE3D2; -fx-border-width: 0 0 1 0;");
 
-        Label logo = new Label("📚 OpenLib");
-        logo.getStyleClass().add("sidebar-title");
-        logo.setPadding(new Insets(24, 6, 2, 6));
-        Label sub = new Label("Checkout");
-        sub.getStyleClass().add("sidebar-subtitle");
-        sub.setPadding(new Insets(0, 6, 16, 6));
+        Label step1 = new Label("✅ 1. Carrito");
+        step1.setStyle("-fx-text-fill: #2F5D62; -fx-font-weight: bold;");
+        
+        Label line1 = new Label("———");
+        line1.setStyle("-fx-text-fill: #EDE3D2;");
 
-        Label step1 = new Label("✅  1. Carrito");
-        step1.setStyle("-fx-text-fill: #2F5D62; -fx-font-size: 13px; -fx-padding: 8 16;");
-        Label step2 = new Label("➡  2. Checkout");
-        step2.setStyle("-fx-text-fill: #2E2E2E; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 8 16;");
-        Label step3 = new Label("◯  3. Confirmación");
-        step3.setStyle("-fx-text-fill: #6E7681; -fx-font-size: 13px; -fx-padding: 8 16;");
+        Label step2 = new Label("🔵 2. Checkout");
+        step2.setStyle("-fx-text-fill: #2E2E2E; -fx-font-weight: bold;");
 
-        Region spacer = ViewHelper.vSpacer();
-        Button btnOrders = ViewHelper.sidebarBtn("🧾  Mis Pedidos", false, controller::goToOrderHistory);
-        Button backBtn = new Button("← Volver al carrito");
-        backBtn.getStyleClass().add("sidebar-btn");
-        backBtn.setMaxWidth(Double.MAX_VALUE);
-        backBtn.setOnAction(e -> controller.goToCart());
+        Label line2 = new Label("———");
+        line2.setStyle("-fx-text-fill: #EDE3D2;");
 
-        sidebar.getChildren().addAll(logo, sub, step1, step2, step3, spacer, btnOrders, backBtn);
-        return sidebar;
+        Label step3 = new Label("◯ 3. Confirmación");
+        step3.setStyle("-fx-text-fill: #6E7681;");
+
+        stepper.getChildren().addAll(step1, line1, step2, line2, step3);
+        return stepper;
     }
 
     private HBox buildCheckoutForm() {

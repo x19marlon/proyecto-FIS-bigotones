@@ -2,18 +2,163 @@ package com.openlib.view;
 
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import com.openlib.model.Book;
+import com.openlib.util.DataStore;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class ViewHelper {
 
     public static final String CSS_PATH =
             ViewHelper.class.getResource("/css/styles.css").toExternalForm();
+
+    // ==================== ECOMMERCE HEADER ====================
+
+    /**
+     * Builds the ecommerce header bar with logo, search, and user zone.
+     * @param searchField The search TextField to embed (can be null for non-catalog views)
+     * @param onSearch Runnable to execute when search is triggered
+     * @param cartCount Current cart item count
+     * @param onCartClick Action when cart button is clicked
+     */
+    public static HBox buildEcommerceHeader(TextField searchField, Runnable onSearch,
+                                             int cartCount, Runnable onCartClick) {
+        HBox header = new HBox(16);
+        header.getStyleClass().add("ecom-header");
+        header.setAlignment(Pos.CENTER_LEFT);
+
+        // Logo section
+        VBox logoBox = new VBox(0);
+        logoBox.setAlignment(Pos.CENTER_LEFT);
+        logoBox.setMinWidth(130);
+        Label logo = new Label("📚 OpenLib");
+        logo.getStyleClass().add("ecom-header-logo");
+        Label logoSub = new Label("Market");
+        logoSub.getStyleClass().add("ecom-header-logo-sub");
+        logoBox.getChildren().addAll(logo, logoSub);
+
+        // Search bar
+        HBox searchBox = new HBox(0);
+        searchBox.getStyleClass().add("ecom-search-container");
+        searchBox.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(searchBox, Priority.ALWAYS);
+
+        if (searchField != null) {
+            searchField.getStyleClass().clear();
+            searchField.getStyleClass().add("ecom-search-field");
+            searchField.setPromptText("Buscar libros, autores, ISBN...");
+            HBox.setHgrow(searchField, Priority.ALWAYS);
+
+            Button searchBtn = new Button("🔍");
+            searchBtn.getStyleClass().add("ecom-search-btn");
+            searchBtn.setOnAction(e -> { if (onSearch != null) onSearch.run(); });
+
+            searchBox.getChildren().addAll(searchField, searchBtn);
+        } else {
+            // Placeholder search for non-catalog views
+            TextField placeholder = new TextField();
+            placeholder.getStyleClass().add("ecom-search-field");
+            placeholder.setPromptText("Buscar libros, autores, ISBN...");
+            HBox.setHgrow(placeholder, Priority.ALWAYS);
+            
+            Button searchBtn = new Button("🔍");
+            searchBtn.getStyleClass().add("ecom-search-btn");
+            searchBtn.setOnAction(e -> {
+                // Navigate to catalog with search query
+                com.openlib.util.SceneManager.getInstance().showBuyerDashboard();
+            });
+
+            searchBox.getChildren().addAll(placeholder, searchBtn);
+        }
+
+        // User zone
+        HBox userZone = new HBox(12);
+        userZone.getStyleClass().add("ecom-user-zone");
+        userZone.setAlignment(Pos.CENTER_RIGHT);
+        userZone.setMinWidth(Region.USE_PREF_SIZE);
+
+        String userName = "Usuario";
+        try {
+            var user = DataStore.getInstance().getCurrentUser();
+            if (user != null && user.getName() != null) {
+                userName = user.getName().split(" ")[0];
+            }
+        } catch (Exception ignored) {}
+
+        // My Account Dropdown
+        MenuButton accountMenu = new MenuButton("Hola, " + userName + "\nMi Cuenta ▾");
+        accountMenu.getStyleClass().add("ecom-user-menu");
+        
+        MenuItem profile = new MenuItem("👤 Mi Perfil");
+        profile.setOnAction(e -> {
+            // SceneManager.getInstance().showProfile(); 
+            // For now, let's just show a simple profile alert or navigate if we implement it
+            com.openlib.util.SceneManager.getInstance().showProfile();
+        });
+
+        MenuItem orders = new MenuItem("🧾 Mis Pedidos");
+        orders.setOnAction(e -> com.openlib.util.SceneManager.getInstance().showOrderHistory());
+
+        MenuItem library = new MenuItem("📖 Mi Biblioteca");
+        library.setOnAction(e -> com.openlib.util.SceneManager.getInstance().showLibrary());
+
+        MenuItem logout = new MenuItem("⬅ Cerrar sesión");
+        logout.setOnAction(e -> new com.openlib.controller.AuthController().logout());
+
+        accountMenu.getItems().addAll(profile, orders, library, new SeparatorMenuItem(), logout);
+
+        // Cart button
+        Button cartBtn = new Button("🛒 Carrito");
+        cartBtn.getStyleClass().add("ecom-header-action");
+        cartBtn.setOnAction(e -> { if (onCartClick != null) onCartClick.run(); });
+
+        if (cartCount > 0) {
+            Label badge = new Label(String.valueOf(cartCount));
+            badge.getStyleClass().add("ecom-cart-badge");
+            StackPane cartContainer = new StackPane(cartBtn, badge);
+            StackPane.setAlignment(badge, Pos.TOP_RIGHT);
+            badge.setTranslateX(8);
+            badge.setTranslateY(-8);
+            userZone.getChildren().addAll(accountMenu, cartContainer);
+        } else {
+            userZone.getChildren().addAll(accountMenu, cartBtn);
+        }
+
+        header.getChildren().addAll(logoBox, searchBox, userZone);
+        return header;
+    }
+
+    // ==================== CATEGORY NAV BAR ====================
+
+    /**
+     * Builds a secondary nav bar with category chips (Amazon-style sub-header).
+     */
+    public static HBox buildCategoryNavBar(List<String> categories, String activeCat,
+                                            Consumer<String> onCategorySelect) {
+        HBox bar = new HBox(0);
+        bar.getStyleClass().add("category-nav-bar");
+        bar.setAlignment(Pos.CENTER_LEFT);
+
+
+
+        for (String cat : categories) {
+            Label chip = new Label(cat);
+            chip.getStyleClass().add("category-nav-chip");
+            if (cat.equals(activeCat)) {
+                chip.getStyleClass().add("category-nav-chip-active");
+            }
+            chip.setOnMouseClicked(e -> onCategorySelect.accept(cat));
+            bar.getChildren().add(chip);
+        }
+
+        return bar;
+    }
+
+    // ==================== BOOK COVER ====================
 
     /** Creates a colored book cover placeholder */
     public static StackPane bookCover(String hexColor, String title, boolean large) {
@@ -46,13 +191,15 @@ public class ViewHelper {
         return sb.toString().toUpperCase();
     }
 
+    // ==================== RATINGS ====================
+
     public static Label starRating(double rating) {
         int full = (int) rating;
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 5; i++) sb.append(i < full ? "★" : "☆");
         sb.append(String.format(" %.1f", rating));
         Label lbl = new Label(sb.toString());
-        lbl.setStyle("-fx-text-fill: #C97B63; -fx-font-size: 13px; -fx-font-weight: bold;");
+        lbl.setStyle("-fx-text-fill: #C97B63; -fx-font-size: 12px; -fx-font-weight: bold;");
         return lbl;
     }
 
@@ -62,6 +209,8 @@ public class ViewHelper {
         l.getStyleClass().add("badge");
         return l;
     }
+
+    // ==================== SPACERS ====================
 
     /** Horizontal spacer */
     public static Region spacer() {
@@ -77,6 +226,8 @@ public class ViewHelper {
         return r;
     }
 
+    // ==================== SIDEBAR BUTTON ====================
+
     /** Generic nav button for sidebars */
     public static Button sidebarBtn(String text, boolean active, Runnable action) {
         Button btn = new Button(text);
@@ -86,6 +237,8 @@ public class ViewHelper {
         btn.setOnAction(e -> action.run());
         return btn;
     }
+
+    // ==================== UTILITY COMPONENTS ====================
 
     public static HBox infoRow(String label, String value) {
         Label lbl = new Label(label);
@@ -107,6 +260,8 @@ public class ViewHelper {
         return card;
     }
 
+    // ==================== PRODUCT CARD ====================
+
     /** Professional Ecommerce Product Card */
     public static VBox productCard(Book book, Consumer<Book> onAdd, Runnable onDetail) {
         VBox card = new VBox(0);
@@ -119,37 +274,20 @@ public class ViewHelper {
         coverContainer.getChildren().add(cover);
 
         // Info area
-        VBox info = new VBox(8);
+        VBox info = new VBox(6);
         info.getStyleClass().add("product-info-container");
 
-        String categoryStr = book.getCategory() == null ? "GENERAL" : book.getCategory().toUpperCase();
-        Label cat = new Label(categoryStr);
-        cat.getStyleClass().add("product-badge");
-
-        // Status badge
-        if (book.getStatus() != null && !"APROBADO".equals(book.getStatus())) {
-            Label statusBadge = new Label(book.getStatus());
-            statusBadge.getStyleClass().add("badge-warn");
-            HBox badges = new HBox(6, cat, statusBadge);
-            info.getChildren().add(badges);
-        } else {
-            info.getChildren().add(cat);
-        }
+        info.getChildren().add(renderCategories(book));
 
         String titleStr = book.getTitle() == null ? "Sin título" : book.getTitle();
         Label title = new Label(titleStr);
         title.getStyleClass().add("product-title");
-        title.setMinHeight(50);
+        title.setMinHeight(44);
         title.setWrapText(true);
 
         String authorStr = book.getAuthor() == null ? "Autor desconocido" : book.getAuthor();
         Label author = new Label("por " + authorStr);
         author.getStyleClass().add("product-author");
-
-        Label shortDesc = new Label("Material educativo de alta calidad disponible para descarga inmediata.");
-        shortDesc.getStyleClass().add("label-small");
-        shortDesc.setWrapText(true);
-        shortDesc.setMaxHeight(40);
 
         HBox priceRow = new HBox(8);
         priceRow.setAlignment(Pos.CENTER_LEFT);
@@ -160,7 +298,7 @@ public class ViewHelper {
         Button btnAdd = new Button("Agregar al carrito");
         btnAdd.getStyleClass().add("btn-accent");
         btnAdd.setMaxWidth(Double.MAX_VALUE);
-        btnAdd.setPrefHeight(40);
+        btnAdd.setPrefHeight(36);
         btnAdd.setOnAction(e -> onAdd.accept(book));
 
         Button btnDetail = new Button("Ver detalle");
@@ -168,11 +306,46 @@ public class ViewHelper {
         btnDetail.setMaxWidth(Double.MAX_VALUE);
         btnDetail.setOnAction(e -> onDetail.run());
 
-        info.getChildren().addAll(title, author, shortDesc, priceRow, btnAdd, btnDetail);
+        info.getChildren().addAll(title, author, priceRow, btnAdd, btnDetail);
         card.getChildren().addAll(coverContainer, info);
 
         return card;
     }
+
+    // ==================== MULTI-CATEGORY RENDERING ====================
+
+    public static HBox renderCategories(Book book) {
+        HBox container = new HBox(4);
+        container.setAlignment(Pos.CENTER_LEFT);
+
+        java.util.List<String> allCats = book.getCategoriesList();
+        int maxVisible = 3;
+        int visibleCount = Math.min(allCats.size(), maxVisible);
+
+        for (int i = 0; i < visibleCount; i++) {
+            Label catLbl = new Label(allCats.get(i));
+            catLbl.getStyleClass().add("product-badge");
+            container.getChildren().add(catLbl);
+        }
+
+        if (allCats.size() > maxVisible) {
+            int extra = allCats.size() - maxVisible;
+            Label extraLbl = new Label("+" + extra);
+            extraLbl.getStyleClass().add("badge-extra");
+            container.getChildren().add(extraLbl);
+        }
+
+        // Add status badge if not approved
+        if (book.getStatus() != null && !"APROBADO".equals(book.getStatus())) {
+            Label statusBadge = new Label(book.getStatus());
+            statusBadge.getStyleClass().add("badge-warn");
+            container.getChildren().add(statusBadge);
+        }
+
+        return container;
+    }
+
+    // ==================== CHIPS ====================
 
     public static Label categoryChip(String text, boolean active) {
         Label l = new Label(text);
@@ -180,6 +353,8 @@ public class ViewHelper {
         if (active) l.getStyleClass().add("chip-active");
         return l;
     }
+
+    // ==================== PAGINATION ====================
 
     /** Professional Pagination Button */
     public static Button paginationBtn(String text, boolean disabled, Runnable action) {
@@ -189,6 +364,8 @@ public class ViewHelper {
         btn.setOnAction(e -> action.run());
         return btn;
     }
+
+    // ==================== STATE VIEWS ====================
 
     /** Generic state view (Empty, Loading, Error) */
     public static VBox stateView(String icon, String title, String subtitle) {

@@ -19,39 +19,21 @@ public class CartView {
     public Scene buildScene() {
         BorderPane root = new BorderPane();
         root.getStyleClass().add("pane-root");
-        root.setLeft(buildSidebar());
+
+        // Header
+        HBox header = ViewHelper.buildEcommerceHeader(
+                null, null,
+                controller.getCartCount(),
+                controller::goToCart
+        );
+        root.setTop(header);
+
+        // Content (No sidebar)
         root.setCenter(buildContent());
 
-        Scene scene = new Scene(root, 1100, 720);
+        Scene scene = new Scene(root, 1200, 780);
         scene.getStylesheets().add(ViewHelper.CSS_PATH);
         return scene;
-    }
-
-    private VBox buildSidebar() {
-        VBox sidebar = new VBox(6);
-        sidebar.getStyleClass().add("sidebar");
-        sidebar.setPadding(new Insets(0, 10, 20, 10));
-
-        Label logo = new Label("📚 OpenLib");
-        logo.getStyleClass().add("sidebar-title");
-        logo.setPadding(new Insets(24, 6, 2, 6));
-        Label sub = new Label("Módulo Buyer");
-        sub.getStyleClass().add("sidebar-subtitle");
-        sub.setPadding(new Insets(0, 6, 16, 6));
-
-        Button btnCatalog = ViewHelper.sidebarBtn("🏠  Catálogo", false, controller::goToCatalog);
-        Button btnCart    = ViewHelper.sidebarBtn("🛒  Carrito", true, controller::goToCart);
-        Button btnOrders  = ViewHelper.sidebarBtn("🧾  Mis Pedidos", false, controller::goToOrderHistory);
-        Button btnLibrary = ViewHelper.sidebarBtn("📖  Mi Biblioteca", false, controller::goToLibrary);
-
-        Region spacer = ViewHelper.vSpacer();
-        Button btnLogout = new Button("⬅  Cerrar sesión");
-        btnLogout.getStyleClass().add("logout-btn");
-        btnLogout.setMaxWidth(Double.MAX_VALUE);
-        btnLogout.setOnAction(e -> controller.logout());
-
-        sidebar.getChildren().addAll(logo, sub, btnCatalog, btnCart, btnLibrary, spacer, btnLogout);
-        return sidebar;
     }
 
     private HBox buildContent() {
@@ -60,7 +42,7 @@ public class CartView {
         content.getStyleClass().add("pane-root");
 
         // Left: items list
-        VBox leftCol = new VBox(12);
+        VBox leftCol = new VBox(16);
         VBox.setVgrow(leftCol, Priority.ALWAYS);
         HBox.setHgrow(leftCol, Priority.ALWAYS);
 
@@ -150,6 +132,9 @@ public class CartView {
 
         VBox info = new VBox(6);
         HBox.setHgrow(info, Priority.ALWAYS);
+
+        info.getChildren().add(ViewHelper.renderCategories(item.getBook()));
+
         String titleStr = item.getBook().getTitle() == null ? "Sin título" : item.getBook().getTitle();
         Label titleLbl = new Label(titleStr);
         titleLbl.getStyleClass().add("product-title");
@@ -158,11 +143,7 @@ public class CartView {
         Label authorLbl = new Label("por " + authorStr);
         authorLbl.getStyleClass().add("product-author");
         
-        String categoryStr = item.getBook().getCategory() == null ? "GENERAL" : item.getBook().getCategory().toUpperCase();
-        Label catLbl = new Label(categoryStr);
-        catLbl.getStyleClass().add("product-badge");
-        
-        info.getChildren().addAll(catLbl, titleLbl, authorLbl);
+        info.getChildren().addAll(titleLbl, authorLbl);
 
         Label price = new Label("GRATIS");
         price.getStyleClass().add("product-price");

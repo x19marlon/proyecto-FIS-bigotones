@@ -45,6 +45,10 @@ public class SceneManager {
         setScene(new BuyerDashboardView().buildScene());
     }
 
+    public void showProfile() {
+        setScene(new ProfileView().buildScene());
+    }
+
     public void showCart() {
         setScene(new CartView().buildScene());
     }
