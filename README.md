@@ -35,7 +35,7 @@ El desarrollo de OpenLib Market se centra en los siguientes pilares:
 ### Funcionalidades Pendientes / Roadmap
 *   **Autocompletado de Datos:** Carga automática de perfiles de usuario en el checkout para agilizar el proceso.
 *   **Descarga Segura:** Implementación de acceso a archivos mediante URLs únicas y temporales.
-*   **Filtrado por Categorías:** Corregir la funcionalidad de búsqueda por categorías en el catálogo, la cual se encuentra actualmente inactiva.
+*   **Filtrado por Categorías:** Arreglar la funcionalidad de categorías para que, al seleccionar una categoría específica, se filtren y muestren correctamente los libros pertenecientes a esa categoría.
 *   **Paginación del Lado del Servidor:** Optimización del catálogo para soportar miles de registros sin degradación de rendimiento.
 *   **Validación Avanzada de Datos:** Refinamiento de las reglas de negocio para facturación y estados de pedido.
 
