@@ -79,6 +79,25 @@ El desarrollo de OpenLib Market se centra en los siguientes pilares:
 *   **Filtrado por Categorías:** Arreglar la funcionalidad de categorías para que, al seleccionar una categoría específica, se filtren y muestren correctamente los libros pertenecientes a esa categoría.
 *   **Validación Avanzada de Datos:** Refinamiento de las reglas de negocio para facturación y estados de pedido.
 
+### Patrones Arquitectónicos (GoF) a Implementar
+
+Se ha identificado la necesidad de integrar los siguientes patrones del **Gang of Four** para mejorar la solidez y escalabilidad del sistema:
+
+| Patrón | Tipo | Ubicación Sugerida | Beneficio Principal |
+| :--- | :--- | :--- | :--- |
+| **State** | Comportamiento | `Order.java` | Control de flujo de vida de la compra y transiciones de estado. |
+| **Strategy** | Comportamiento | `OrderService.java` | Flexibilidad en reglas de precios, impuestos y descuentos. |
+| **Observer** | Comportamiento | `OrderService` -> `Events` | Desacoplamiento de tareas automáticas post-compra (Emails, Stock). |
+| **Factory Method** | Creacional | `SceneManager.java` | Centralización y limpieza en la construcción de la interfaz JavaFX. |
+| **Proxy** | Estructural | `ApiClient.java` | Implementación de caché local y validaciones de seguridad en red. |
+
+#### Justificación Detallada:
+*   **State Pattern:** Permite que el objeto `Order` gestione sus propias reglas de negocio según su estado (e.g., no cancelar una orden ya enviada), eliminando condicionales complejos en los servicios.
+*   **Strategy Pattern:** Facilita la adición de nuevas lógicas de negocio para el cálculo de totales (descuentos VIP, promociones temporales) sin modificar el código existente.
+*   **Observer Pattern:** Permite que el sistema reaccione a eventos (como una compra exitosa) disparando múltiples acciones independientes (notificaciones, logs, inventario) de forma desacoplada.
+*   **Factory Method:** Encapsula la creación de escenas en el frontend, permitiendo una inicialización más compleja de las vistas sin ensuciar la lógica de navegación del `SceneManager`.
+*   **Proxy Pattern:** Actúa como un intermediario para las peticiones a la API, permitiendo añadir capas de caché para mejorar el rendimiento y validaciones de seguridad previas a la conexión.
+
 ---
 
 ## 🛠️ Tecnologías Utilizadas
