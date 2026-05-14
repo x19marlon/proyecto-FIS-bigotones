@@ -48,6 +48,7 @@ public class LibraryView {
 
         VBox mainPad = new VBox(20);
         mainPad.setPadding(new Insets(24));
+        mainPad.setAlignment(Pos.TOP_CENTER);
         VBox.setVgrow(mainPad, Priority.ALWAYS);
 
         List<Order> orders = controller.getMyOrders();
@@ -72,7 +73,8 @@ public class LibraryView {
 
             for (Order order : orders) {
                 VBox orderCard = ViewHelper.card(20);
-                orderCard.setMaxWidth(400);
+                orderCard.setMaxWidth(1000);
+                orderCard.setAlignment(Pos.TOP_CENTER);
 
                 HBox orderHeader = new HBox(12);
                 orderHeader.setAlignment(Pos.CENTER_LEFT);
