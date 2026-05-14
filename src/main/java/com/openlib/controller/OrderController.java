@@ -25,6 +25,16 @@ public class OrderController {
         return orderService.getOrdersByUser(userId);
     }
 
+    @PutMapping("/{id}/next")
+    public Order advanceOrder(@PathVariable Long id) {
+        return orderService.advanceOrder(id);
+    }
+
+    @PutMapping("/{id}/cancel")
+    public Order cancelOrder(@PathVariable Long id) {
+        return orderService.cancelOrder(id);
+    }
+
     @Data
     public static class OrderRequest {
         private Long userId;

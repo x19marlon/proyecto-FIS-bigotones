@@ -98,17 +98,62 @@ public class AdminOrdersView {
 
                 Region spc = ViewHelper.spacer();
 
-                Label statusBadge = new Label("✓ " + order.getStatus());
+                Label statusBadge = new Label(order.getStatus());
                 statusBadge.getStyleClass().add("badge");
+                // Style based on status
+                if ("PENDING".equals(order.getStatus())) statusBadge.setStyle("-fx-background-color: #f39c12;");
+                else if ("PAID".equals(order.getStatus())) statusBadge.setStyle("-fx-background-color: #3498db;");
+                else if ("SHIPPED".equals(order.getStatus())) statusBadge.setStyle("-fx-background-color: #9b59b6;");
+                else if ("DELIVERED".equals(order.getStatus())) statusBadge.setStyle("-fx-background-color: #27ae60;");
+                else if ("CANCELLED".equals(order.getStatus())) statusBadge.setStyle("-fx-background-color: #e74c3c;");
 
                 Label totalLbl = new Label(String.format("$%.2f", order.getTotal()));
                 totalLbl.setStyle("-fx-font-weight: bold; -fx-text-fill: #2F5D62; -fx-font-size: 15px;");
 
                 header.getChildren().addAll(orderIdLbl, userLbl, dateLbl, spc, statusBadge, totalLbl);
 
+                // Actions row
+                HBox actions = new HBox(8);
+                actions.setAlignment(Pos.CENTER_LEFT);
+                actions.setPadding(new Insets(8, 0, 0, 0));
+
+                Button btnNext = new Button("Siguiente Paso ➔");
+                btnNext.getStyleClass().add("btn-small");
+                btnNext.setOnAction(e -> {
+                    try {
+                        controller.advanceOrder(order.getId());
+                        controller.goToOrders(); // Refresh
+                    } catch (Exception ex) {
+                        ViewHelper.showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
+                    }
+                });
+
+                Button btnCancel = new Button("Cancelar ✖");
+                btnCancel.getStyleClass().addAll("btn-small", "btn-danger");
+                btnCancel.setOnAction(e -> {
+                    try {
+                        controller.cancelOrder(order.getId());
+                        controller.goToOrders(); // Refresh
+                    } catch (Exception ex) {
+                        ViewHelper.showAlert(Alert.AlertType.ERROR, "Error", ex.getMessage());
+                    }
+                });
+
+                // Disable buttons if final states
+                if ("DELIVERED".equals(order.getStatus()) || "CANCELLED".equals(order.getStatus())) {
+                    btnNext.setDisable(true);
+                    btnCancel.setDisable(true);
+                }
+                if ("SHIPPED".equals(order.getStatus())) {
+                    btnCancel.setDisable(true);
+                }
+
+                actions.getChildren().addAll(btnNext, btnCancel);
+
                 // Books list
                 HBox booksRow = new HBox(8);
                 booksRow.setAlignment(Pos.CENTER_LEFT);
+                booksRow.setPadding(new Insets(8, 0, 0, 0));
                 for (com.openlib.model.OrderItem item : order.getItems()) {
                     Label bookBadge = new Label("📗 " + item.getBook().getTitle());
                     bookBadge.setStyle("-fx-background-color: #EDE3D2; -fx-text-fill: #2E2E2E; "
@@ -116,7 +161,7 @@ public class AdminOrdersView {
                     booksRow.getChildren().add(bookBadge);
                 }
 
-                card.getChildren().addAll(header, booksRow);
+                card.getChildren().addAll(header, actions, booksRow);
                 inner.getChildren().add(card);
             }
         }

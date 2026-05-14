@@ -199,8 +199,9 @@ public class DataStore {
                 .id(nextOrderId++)
                 .user(currentUser)
                 .total(total)
-                .status("COMPLETED")
+                .status("PENDING")
                 .build();
+        order.onPostLoad(); // Initialize transient state
         
         List<com.openlib.model.OrderItem> items = snapshot.stream()
                 .map(ci -> com.openlib.model.OrderItem.builder()
@@ -226,7 +227,30 @@ public class DataStore {
                 .collect(Collectors.toList());
     }
 
-    public List<Order> getAllOrders() { return new ArrayList<>(orders); }
+    public List<Order> getAllOrders() { 
+        orders.forEach(o -> { if(o.getCurrentState() == null) o.onPostLoad(); });
+        return new ArrayList<>(orders); 
+    }
+
+    public void advanceOrder(Long orderId) {
+        orders.stream()
+                .filter(o -> o.getId().equals(orderId))
+                .findFirst()
+                .ifPresent(o -> {
+                    o.nextStep();
+                    o.syncStatus();
+                });
+    }
+
+    public void cancelOrder(Long orderId) {
+        orders.stream()
+                .filter(o -> o.getId().equals(orderId))
+                .findFirst()
+                .ifPresent(o -> {
+                    o.cancelOrder();
+                    o.syncStatus();
+                });
+    }
 
     // ==================== ADMIN STATS ====================
 

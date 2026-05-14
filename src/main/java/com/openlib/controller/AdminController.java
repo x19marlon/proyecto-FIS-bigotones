@@ -48,6 +48,8 @@ public class AdminController {
 
     // ---- Orders ----
     public List<Order> getAllOrders() { return store.getAllOrders(); }
+    public void advanceOrder(Long id) { store.advanceOrder(id); }
+    public void cancelOrder(Long id) { store.cancelOrder(id); }
 
     // ---- Navigation ----
     public Long getCurrentUserId() {

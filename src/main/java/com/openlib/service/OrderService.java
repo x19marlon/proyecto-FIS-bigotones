@@ -33,8 +33,9 @@ public class OrderService {
 
         Order order = Order.builder()
                 .user(user)
-                .status("COMPLETED")
                 .build();
+        
+        // El estado se inicializará por defecto en PENDING gracias a la lógica en Order y el ciclo de vida de JPA
 
         for (OrderItemRequest req : items) {
             Book book = bookRepository.findById(req.getBookId())
@@ -61,6 +62,22 @@ public class OrderService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
         return orderRepository.findByUserOrderByDateDesc(user);
+    }
+
+    @Transactional
+    public Order advanceOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+        order.nextStep();
+        return orderRepository.save(order);
+    }
+
+    @Transactional
+    public Order cancelOrder(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
+        order.cancelOrder();
+        return orderRepository.save(order);
     }
 
     @Data
