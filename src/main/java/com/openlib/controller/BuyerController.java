@@ -11,6 +11,7 @@ import java.util.List;
 public class BuyerController {
 
     private final DataStore store = DataStore.getInstance();
+    private final com.openlib.service.proxy.BookService bookService = new com.openlib.service.proxy.CachedBookProxy();
 
     public com.openlib.model.User getCurrentUser() {
         return store.getCurrentUser();
@@ -20,20 +21,9 @@ public class BuyerController {
 
     public List<Book> getBooks(String query, String category) {
         try {
-            // Try fetching from Backend API
-            // Note: API returns a Page<Book> object { content: [...], totalElements: ... }
-            java.util.Map<String, Object> response = com.openlib.util.ApiClient.get("/books", java.util.Map.class);
-            List<java.util.Map<String, Object>> content = (List<java.util.Map<String, Object>>) response.get("content");
-            
-            java.util.List<Book> allBooks = new java.util.ArrayList<>();
-            com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper()
-                    .registerModule(new com.fasterxml.jackson.datatype.jsr310.JavaTimeModule());
-            
-            for (java.util.Map<String, Object> bookMap : content) {
-                allBooks.add(mapper.convertValue(bookMap, Book.class));
-            }
+            List<Book> allBooks = bookService.getAllBooks();
 
-            // Local filtering (since backend /api/books doesn't support query/category yet)
+            // Local filtering
             String q = query == null ? "" : query.toLowerCase().trim();
             return allBooks.stream()
                     .filter(b -> {
@@ -49,7 +39,7 @@ public class BuyerController {
                     .collect(java.util.stream.Collectors.toList());
 
         } catch (Exception e) {
-            System.err.println("Backend API not available or error, falling back to local DataStore: " + e.getMessage());
+            System.err.println("Proxy Service failed, falling back to local DataStore: " + e.getMessage());
             return store.searchBooks(query, category);
         }
     }

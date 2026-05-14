@@ -89,6 +89,7 @@ Se han implementado los siguientes patrones del **Gang of Four** para fortalecer
 | **Strategy** | Comportamiento | `BuyerDashboardView.java` | Desacopla la lógica de ordenamiento del catálogo. Permite alternar entre algoritmos (A-Z, Z-A, Recientes) dinámicamente y facilita la adición de nuevos criterios. |
 | **Observer** | Comportamiento | `OrderService.java` | Notifica automáticamente a múltiples interesados (Email, Auditoría) cuando cambia el estado de un pedido, manteniendo el sistema desacoplado. |
 | **Factory Method** | Creacional | `SceneManager.java` | Centraliza la instanciación de vistas en `OpenLibViewFactory`. Desacopla la navegación de la lógica de creación de escenas, facilitando la extensión. |
+| **Proxy** | Estructural | `BuyerController.java` | Implementa un intermediario para el catálogo de libros (`CachedBookProxy`). Gestiona la caché en memoria para evitar llamadas redundantes al backend y mejorar la velocidad. |
 
 #### Detalles del Patrón Observer:
 *   **Sujeto (`OrderEventManager`):** Gestiona la suscripción de interesados y dispara las notificaciones.
@@ -99,9 +100,7 @@ Se han implementado los siguientes patrones del **Gang of Four** para fortalecer
 
 ### 🛠️ Próximos Patrones en el Roadmap
 
-| Patrón | Tipo | Ubicación Sugerida | Beneficio Principal |
-| :--- | :--- | :--- | :--- |
-| **Proxy** | Estructural | `ApiClient.java` | Implementación de caché local y validaciones de seguridad en red. |
+*(Todos los patrones del roadmap inicial han sido integrados exitosamente).*
 
 ---
 
