@@ -87,12 +87,12 @@ Se han implementado los siguientes patrones del **Gang of Four** para fortalecer
 | :--- | :--- | :--- | :--- |
 | **State** | Comportamiento | `Order.java` | Gestiona el ciclo de vida de los pedidos (Pendiente, Pagado, Enviado, etc.). Garantiza transiciones seguras (ej. no se puede cancelar un pedido ya enviado). |
 | **Strategy** | Comportamiento | `BuyerDashboardView.java` | Desacopla la lógica de ordenamiento del catálogo. Permite alternar entre algoritmos (A-Z, Z-A, Recientes) dinámicamente y facilita la adición de nuevos criterios. |
+| **Observer** | Comportamiento | `OrderService.java` | Notifica automáticamente a múltiples interesados (Email, Auditoría) cuando cambia el estado de un pedido, manteniendo el sistema desacoplado. |
 
 ### 🛠️ Próximos Patrones en el Roadmap
 
 | Patrón | Tipo | Ubicación Sugerida | Beneficio Principal |
 | :--- | :--- | :--- | :--- |
-| **Observer** | Comportamiento | `OrderService` -> `Events` | Desacoplamiento de tareas automáticas post-compra (Notificaciones, Logs). |
 | **Factory Method** | Creacional | `SceneManager.java` | Centralización y limpieza en la construcción de la interfaz JavaFX. |
 | **Proxy** | Estructural | `ApiClient.java` | Implementación de caché local y validaciones de seguridad en red. |
 

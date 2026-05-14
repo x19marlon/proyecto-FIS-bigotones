@@ -11,6 +11,8 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.openlib.util.observer.*;
+import jakarta.annotation.PostConstruct;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +24,14 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final UserRepository userRepository;
     private final BookRepository bookRepository;
+    private final OrderEventManager eventManager;
+
+    @PostConstruct
+    public void init() {
+        // Registrar observadores por defecto
+        eventManager.subscribe(new EmailNotificationObserver());
+        eventManager.subscribe(new AdminLogObserver());
+    }
 
     @Transactional
     public Order placeOrder(Long userId, List<OrderItemRequest> items) {
@@ -55,7 +65,9 @@ public class OrderService {
         order.setItems(orderItems);
         order.setTotal(total);
 
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        eventManager.notify(savedOrder);
+        return savedOrder;
     }
 
     public List<Order> getOrdersByUser(Long userId) {
@@ -69,7 +81,9 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
         order.nextStep();
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        eventManager.notify(savedOrder);
+        return savedOrder;
     }
 
     @Transactional
@@ -77,7 +91,9 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Pedido no encontrado"));
         order.cancelOrder();
-        return orderRepository.save(order);
+        Order savedOrder = orderRepository.save(order);
+        eventManager.notify(savedOrder);
+        return savedOrder;
     }
 
     @Data
