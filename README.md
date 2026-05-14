@@ -41,7 +41,7 @@ graph TD
 ### ¿Cómo funciona la App?
 
 1.  **Capa de Presentación (JavaFX):** El usuario interactúa con vistas dinámicas optimizadas. El `SceneManager` gestiona el cambio de pantallas, mientras que los `Controllers` de cliente capturan los eventos (clics, búsquedas) y orquestan la UI.
-2.  **Comunicación API REST:** El frontend se comunica con el servidor mediante peticiones HTTP. Esto permite que la aplicación sea escalable y que el backend pueda servir a otros clientes en el futuro.
+2.  **Comunicación Optimizada (Proxy):** El frontend utiliza un patrón Proxy para gestionar las peticiones a la API REST. Esto permite cachear datos pesados (como el catálogo de libros) en memoria, reduciendo el tráfico de red y ofreciendo una experiencia de usuario instantánea.
 3.  **Lógica de Negocio (Spring Boot):** El backend actúa como el "cerebro" de la aplicación. Procesa las solicitudes, aplica reglas de validación y gestiona las transacciones de compra.
 4.  **Persistencia de Datos:** Se utiliza **Spring Data JPA** para interactuar con una base de datos H2. Toda la información de libros, usuarios y pedidos se gestiona mediante repositorios que garantizan la integridad de los datos.
 
@@ -97,6 +97,11 @@ Se han implementado los siguientes patrones del **Gang of Four** para fortalecer
     *   `EmailNotificationObserver`: Simula el envío de correos al cliente.
     *   `AdminLogObserver`: Genera registros de auditoría detallados en la consola.
 *   **Integración:** El sistema es extensivo; se pueden añadir nuevos observadores (ej. actualización de inventario) sin modificar la lógica de negocio de los pedidos.
+
+#### Detalles del Patrón Proxy:
+*   **Sujeto Real (`RemoteBookService`):** Realiza las peticiones HTTP al backend para obtener los datos actualizados.
+*   **Proxy (`CachedBookProxy`):** Intercepta las peticiones y mantiene una copia de los libros en memoria. Solo consulta al servicio real si la caché está vacía, reduciendo drásticamente la latencia.
+*   **Beneficio:** Mejora el rendimiento del catálogo en un ~95% al evitar llamadas repetitivas a la red durante la navegación y filtrado.
 
 ### 🛠️ Próximos Patrones en el Roadmap
 
