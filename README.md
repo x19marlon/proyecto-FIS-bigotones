@@ -89,6 +89,13 @@ Se han implementado los siguientes patrones del **Gang of Four** para fortalecer
 | **Strategy** | Comportamiento | `BuyerDashboardView.java` | Desacopla la lógica de ordenamiento del catálogo. Permite alternar entre algoritmos (A-Z, Z-A, Recientes) dinámicamente y facilita la adición de nuevos criterios. |
 | **Observer** | Comportamiento | `OrderService.java` | Notifica automáticamente a múltiples interesados (Email, Auditoría) cuando cambia el estado de un pedido, manteniendo el sistema desacoplado. |
 
+#### Detalles del Patrón Observer:
+*   **Sujeto (`OrderEventManager`):** Gestiona la suscripción de interesados y dispara las notificaciones.
+*   **Observadores Concretos:** 
+    *   `EmailNotificationObserver`: Simula el envío de correos al cliente.
+    *   `AdminLogObserver`: Genera registros de auditoría detallados en la consola.
+*   **Integración:** El sistema es extensivo; se pueden añadir nuevos observadores (ej. actualización de inventario) sin modificar la lógica de negocio de los pedidos.
+
 ### 🛠️ Próximos Patrones en el Roadmap
 
 | Patrón | Tipo | Ubicación Sugerida | Beneficio Principal |
