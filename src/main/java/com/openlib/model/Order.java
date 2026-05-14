@@ -32,7 +32,8 @@ public class Order {
 
     @Transient
     @com.fasterxml.jackson.annotation.JsonIgnore
-    private OrderState currentState;
+    @Builder.Default
+    private OrderState currentState = new PendingState();
 
     @PostLoad
     public void onPostLoad() {
