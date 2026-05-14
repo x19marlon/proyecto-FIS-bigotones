@@ -4,6 +4,7 @@ import com.openlib.controller.BuyerController;
 import com.openlib.model.Book;
 import com.openlib.util.DataStore;
 import com.openlib.util.SceneManager;
+import com.openlib.util.strategy.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -138,23 +139,10 @@ public class BuyerDashboardView {
         try {
             cachedBooks = new java.util.ArrayList<>(controller.getBooks(query, category));
             
-            // Sorting logic (Frontend)
-            String sort = sortCombo.getValue();
-            if (sort != null) {
-                if (sort.contains("Título (A-Z)")) {
-                    cachedBooks.sort((a, b) -> {
-                        String t1 = a.getTitle() == null ? "" : a.getTitle();
-                        String t2 = b.getTitle() == null ? "" : b.getTitle();
-                        return t1.compareToIgnoreCase(t2);
-                    });
-                } else if (sort.contains("Título (Z-A)")) {
-                    cachedBooks.sort((a, b) -> {
-                        String t1 = a.getTitle() == null ? "" : a.getTitle();
-                        String t2 = b.getTitle() == null ? "" : b.getTitle();
-                        return t2.compareToIgnoreCase(t1);
-                    });
-                }
-            }
+            // Sorting logic using Strategy Pattern
+            String sortValue = sortCombo.getValue();
+            SortStrategy strategy = getSortStrategy(sortValue);
+            strategy.sort(cachedBooks);
 
             renderCurrentPage();
         } catch (Exception e) {
@@ -165,6 +153,15 @@ public class BuyerDashboardView {
                 "Hubo un problema inesperado. Por favor intenta de nuevo."));
             paginationFooter.setVisible(false);
         }
+    }
+
+    private SortStrategy getSortStrategy(String label) {
+        if (label == null) return new RecentStrategy();
+        
+        if (label.contains("Título (A-Z)")) return new TitleAZStrategy();
+        if (label.contains("Título (Z-A)")) return new TitleZAStrategy();
+        
+        return new RecentStrategy();
     }
 
     private void renderCurrentPage() {
