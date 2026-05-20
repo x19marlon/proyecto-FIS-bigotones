@@ -1,4 +1,4 @@
-package com.openlib.service.proxy;
+package com.openlib.service.decorator;
 
 import com.openlib.model.Book;
 import java.util.List;

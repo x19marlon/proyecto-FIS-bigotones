@@ -11,7 +11,7 @@ import java.util.List;
 public class BuyerController {
 
     private final DataStore store = DataStore.getInstance();
-    private final com.openlib.service.proxy.BookService bookService = new com.openlib.service.proxy.CachedBookProxy();
+    private final com.openlib.service.decorator.BookService bookService = new com.openlib.service.decorator.CachedBookDecorator(new com.openlib.service.decorator.RemoteBookService());
 
     public com.openlib.model.User getCurrentUser() {
         return store.getCurrentUser();
