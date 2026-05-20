@@ -41,7 +41,7 @@ graph TD
 ### ¿Cómo funciona la App?
 
 1.  **Capa de Presentación (JavaFX):** El usuario interactúa con vistas dinámicas optimizadas. El `SceneManager` gestiona el cambio de pantallas, mientras que los `Controllers` de cliente capturan los eventos (clics, búsquedas) y orquestan la UI.
-2.  **Comunicación Optimizada (Proxy):** El frontend utiliza un patrón Proxy para gestionar las peticiones a la API REST. Esto permite cachear datos pesados (como el catálogo de libros) en memoria, reduciendo el tráfico de red y ofreciendo una experiencia de usuario instantánea.
+2.  **Comunicación Optimizada (Decorator):** El frontend utiliza un patrón Decorator para envolver las peticiones a la API REST. Esto permite cachear datos pesados (como el catálogo de libros) en memoria, reduciendo el tráfico de red y ofreciendo una experiencia de usuario instantánea.
 3.  **Lógica de Negocio (Spring Boot):** El backend actúa como el "cerebro" de la aplicación. Procesa las solicitudes, aplica reglas de validación y gestiona las transacciones de compra.
 4.  **Persistencia de Datos:** Se utiliza **Spring Data JPA** para interactuar con una base de datos H2. Toda la información de libros, usuarios y pedidos se gestiona mediante repositorios que garantizan la integridad de los datos.
 
@@ -89,7 +89,7 @@ Se han implementado los siguientes patrones del **Gang of Four** para fortalecer
 | **Strategy** | Comportamiento | `BuyerDashboardView.java` | Desacopla la lógica de ordenamiento del catálogo. Permite alternar entre algoritmos (A-Z, Z-A, Recientes) dinámicamente y facilita la adición de nuevos criterios. |
 | **Observer** | Comportamiento | `OrderService.java` | Notifica automáticamente a múltiples interesados (Email, Auditoría) cuando cambia el estado de un pedido, manteniendo el sistema desacoplado. |
 | **Factory Method** | Creacional | `SceneManager.java` | Centraliza la instanciación de vistas en `OpenLibViewFactory`. Desacopla la navegación de la lógica de creación de escenas, facilitando la extensión. |
-| **Proxy** | Estructural | `BuyerController.java` | Implementa un intermediario para el catálogo de libros (`CachedBookProxy`). Gestiona la caché en memoria para evitar llamadas redundantes al backend y mejorar la velocidad. |
+| **Decorator** | Estructural | `BuyerController.java` | Implementa un envoltorio para el servicio de libros (`CachedBookDecorator`). Añade funcionalidad de caché en memoria de manera dinámica sin alterar la lógica de llamadas al backend, mejorando la velocidad. |
 
 #### Detalles del Patrón Observer:
 *   **Sujeto (`OrderEventManager`):** Gestiona la suscripción de interesados y dispara las notificaciones.
@@ -98,10 +98,10 @@ Se han implementado los siguientes patrones del **Gang of Four** para fortalecer
     *   `AdminLogObserver`: Genera registros de auditoría detallados en la consola.
 *   **Integración:** El sistema es extensivo; se pueden añadir nuevos observadores (ej. actualización de inventario) sin modificar la lógica de negocio de los pedidos.
 
-#### Detalles del Patrón Proxy:
-*   **Sujeto Real (`RemoteBookService`):** Realiza las peticiones HTTP al backend para obtener los datos actualizados.
-*   **Proxy (`CachedBookProxy`):** Intercepta las peticiones y mantiene una copia de los libros en memoria. Solo consulta al servicio real si la caché está vacía, reduciendo drásticamente la latencia.
-*   **Beneficio:** Mejora el rendimiento del catálogo en un ~95% al evitar llamadas repetitivas a la red durante la navegación y filtrado.
+#### Detalles del Patrón Decorator:
+*   **Componente Original (`RemoteBookService`):** Realiza las peticiones HTTP al backend para obtener los datos actualizados.
+*   **Decorador (`CachedBookDecorator`):** Envuelve el servicio original y mantiene una copia de los libros en memoria. Solo consulta al servicio envuelto si la caché está vacía, reduciendo drásticamente la latencia.
+*   **Beneficio:** Añade la funcionalidad de caché dinámicamente y mejora el rendimiento del catálogo en un ~95% al evitar llamadas repetitivas a la red durante la navegación y filtrado.
 
 ### 🛠️ Próximos Patrones en el Roadmap
 
