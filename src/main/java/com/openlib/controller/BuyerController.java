@@ -27,15 +27,14 @@ public class BuyerController {
             String q = query == null ? "" : query.toLowerCase().trim();
             return allBooks.stream()
                     .filter(b -> {
-                        String title = b.getTitle() == null ? "" : b.getTitle().toLowerCase();
-                        String author = b.getAuthor() == null ? "" : b.getAuthor().toLowerCase();
-                        String isbn = b.getIsbn() == null ? "" : b.getIsbn();
-                        String bCat = b.getCategory() == null ? "" : b.getCategory();
-
-                        boolean matchQ = q.isEmpty() || title.contains(q) || author.contains(q) || isbn.contains(q);
-                        boolean matchCat = category == null || category.equals("Todas") || bCat.equals(category);
-                        return matchQ && matchCat;
-                    })
+    String title = b.getTitle() == null ? "" : b.getTitle().toLowerCase();
+    String author = b.getAuthor() == null ? "" : b.getAuthor().toLowerCase();
+    String isbn = b.getIsbn() == null ? "" : b.getIsbn();
+    java.util.List<String> bCats = b.getCategoriesList();  
+    boolean matchQ = q.isEmpty() || title.contains(q) || author.contains(q) || isbn.contains(q);
+    boolean matchCat = category == null || category.equals("Todas") || bCats.contains(category);  
+    return matchQ && matchCat;
+})
                     .collect(java.util.stream.Collectors.toList());
 
         } catch (Exception e) {
