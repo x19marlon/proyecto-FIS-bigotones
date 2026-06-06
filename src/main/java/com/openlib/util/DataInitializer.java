@@ -35,12 +35,23 @@ public class DataInitializer {
                 "Steve McConnell", "Kent Beck", "Eric Evans",
                 "Joshua Bloch", "Brian Goetz", "Martin Fowler"
             };
+            // 5 categorías generales: Literatura | Ingeniería de Software | Ciencias | Matemáticas | Gestión
             String[] categories = {
-                "Literatura, Clásico, Aventura", "Software, Ingeniería, Clean Code", "Software, Patrones, Diseño",
-                "Software, Programación, Pragmático", "Ciencia, Algoritmos, Matemáticas", "Ciencia, IA, Robótica",
-                "Software, Entrevistas, Carrera", "Gestión, Ingeniería, Clásico", "Software, Refactorización, Diseño",
-                "Software, Construcción, Calidad", "Software, TDD, Agile", "Software, DDD, Arquitectura",
-                "Software, Java, Backend", "Software, Java, Concurrencia", "Software, Arquitectura, Enterprise"
+                "Literatura",                         // Don Quijote
+                "Ingeniería de Software",             // Clean Code
+                "Ingeniería de Software",             // Design Patterns
+                "Ingeniería de Software",             // Pragmatic Programmer
+                "Matemáticas",                        // Introduction to Algorithms
+                "Ciencias",                           // Artificial Intelligence
+                "Ingeniería de Software",             // Cracking the Coding Interview
+                "Gestión",                            // The Mythical Man-Month
+                "Ingeniería de Software",             // Refactoring
+                "Ingeniería de Software",             // Code Complete
+                "Ingeniería de Software",             // Test Driven Development
+                "Ingeniería de Software",             // Domain-Driven Design
+                "Ingeniería de Software",             // Effective Java
+                "Ingeniería de Software",             // Java Concurrency
+                "Ingeniería de Software"              // Patterns of Enterprise Application Architecture
             };
             String[] colors = {
                 "#2F5D62", "#C97B63", "#2D6A4F", "#1A3C5E", "#7B2D8B",
@@ -65,7 +76,7 @@ public class DataInitializer {
                     .title("Borrador de Investigación")
                     .author("Investigador Incógnito")
                     .isbn("ISBN-PEND")
-                    .category("Investigación")
+                    .category("Ciencias")
                     .status("PENDIENTE")
                     .build());
 
