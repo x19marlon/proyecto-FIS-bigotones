@@ -221,8 +221,8 @@ public class BuyerDashboardView {
 
         Label sizeLbl = new Label("Por página:");
         sizeLbl.getStyleClass().add("results-counter");
-        
-        pageSizeCombo = new ComboBox<>();
+
+        ComboBox<Integer> pageSizeCombo = new ComboBox<>();
         pageSizeCombo.getItems().addAll(5, 10, 20, 30);
         pageSizeCombo.setValue(pageSize);
         pageSizeCombo.getStyleClass().add("combo-field");
@@ -234,9 +234,9 @@ public class BuyerDashboardView {
         });
 
         paginationFooter.getChildren().addAll(
-                resultsLbl, ViewHelper.spacer(), 
-                btnPrev, pageInfo, btnNext, 
-                ViewHelper.spacer(), 
+                resultsLbl, ViewHelper.spacer(),
+                btnPrev, pageInfo, btnNext,
+                ViewHelper.spacer(),
                 sizeLbl, pageSizeCombo
         );
     }
