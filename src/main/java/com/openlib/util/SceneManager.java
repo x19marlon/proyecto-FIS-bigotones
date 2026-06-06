@@ -31,6 +31,7 @@ public class SceneManager {
         Scene scene = viewFactory.createView(viewType);
         primaryStage.setScene(scene);
         primaryStage.show();
+        primaryStage.requestFocus();
     }
 
     // ---- Navigation methods using Factory ----

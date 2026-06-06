@@ -58,6 +58,7 @@ public class LoginView {
         emailField.setPromptText("usuario@ejemplo.com");
         emailField.getStyleClass().add("input-field");
         emailField.setMaxWidth(Double.MAX_VALUE);
+        javafx.application.Platform.runLater(emailField::requestFocus);
 
         Label passLbl = new Label("Contraseña");
         passLbl.getStyleClass().add("input-label");
