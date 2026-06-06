@@ -3,6 +3,7 @@ package com.openlib.controller;
 import com.openlib.model.Book;
 import com.openlib.model.CartItem;
 import com.openlib.model.Order;
+import com.openlib.util.ApiClient;
 import com.openlib.util.DataStore;
 import com.openlib.util.SceneManager;
 
@@ -11,7 +12,6 @@ import java.util.List;
 public class BuyerController {
 
     private final DataStore store = DataStore.getInstance();
-    private final com.openlib.service.decorator.BookService bookService = new com.openlib.service.decorator.CachedBookDecorator(new com.openlib.service.decorator.RemoteBookService());
 
     public com.openlib.model.User getCurrentUser() {
         return store.getCurrentUser();
@@ -21,31 +21,40 @@ public class BuyerController {
 
     public List<Book> getBooks(String query, String category) {
         try {
-            List<Book> allBooks = bookService.getAllBooks();
-
-            // Local filtering
-            String q = query == null ? "" : query.toLowerCase().trim();
-            return allBooks.stream()
-                    .filter(b -> {
-    String title = b.getTitle() == null ? "" : b.getTitle().toLowerCase();
-    String author = b.getAuthor() == null ? "" : b.getAuthor().toLowerCase();
-    String isbn = b.getIsbn() == null ? "" : b.getIsbn();
-    java.util.List<String> bCats = b.getCategoriesList();  
-    boolean matchQ = q.isEmpty() || title.contains(q) || author.contains(q) || isbn.contains(q);
-    boolean matchCat = category == null || category.equals("Todas") || bCats.contains(category);  
-    return matchQ && matchCat;
-})
-                    .collect(java.util.stream.Collectors.toList());
+            // Usa el API REST para búsqueda combinada
+            String q   = (query == null ? "" : java.net.URLEncoder.encode(query.trim(), java.nio.charset.StandardCharsets.UTF_8));
+            String cat = (category == null || "Todas".equals(category)) ? "Todas"
+                    : java.net.URLEncoder.encode(category.trim(), java.nio.charset.StandardCharsets.UTF_8);
+            Book[] books = ApiClient.get("/books/search?q=" + q + "&cat=" + cat, Book[].class);
+            return java.util.Arrays.asList(books);
 
         } catch (Exception e) {
-            System.err.println("Proxy Service failed, falling back to local DataStore: " + e.getMessage());
-            return store.searchBooks(query, category);
+            System.err.println("[BuyerController] Error obteniendo libros del API: " + e.getMessage());
+            return java.util.Collections.emptyList();
         }
     }
 
     public List<String> getCategories() {
-        // We still use DataStore for categories or we could fetch them from backend too
-        return store.getCategories();
+        try {
+            String[] cats = ApiClient.get("/books/categories", String[].class);
+            return java.util.Arrays.asList(cats);
+        } catch (Exception e) {
+            System.err.println("[BuyerController] Error obteniendo categorías: " + e.getMessage());
+            return store.getCategories(); // fallback a memoria
+        }
+    }
+
+    /**
+     * Devuelve hasta {@code limit} libros relacionados (misma categoría) desde el API.
+     */
+    public List<Book> getRelatedBooks(Book book, int limit) {
+        try {
+            Book[] related = ApiClient.get("/books/" + book.getId() + "/related?limit=" + limit, Book[].class);
+            return java.util.Arrays.asList(related);
+        } catch (Exception e) {
+            System.err.println("[BuyerController] Error obteniendo libros relacionados: " + e.getMessage());
+            return java.util.Collections.emptyList();
+        }
     }
 
     /**

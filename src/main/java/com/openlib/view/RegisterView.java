@@ -38,6 +38,7 @@ public class RegisterView {
         nameField.setPromptText("Tu nombre");
         nameField.getStyleClass().add("input-field");
         nameField.setMaxWidth(Double.MAX_VALUE);
+        javafx.application.Platform.runLater(nameField::requestFocus);
 
         Label emailLbl = new Label("Correo electrónico");
         emailLbl.getStyleClass().add("input-label");

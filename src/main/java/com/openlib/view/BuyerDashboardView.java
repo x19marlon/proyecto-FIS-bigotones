@@ -19,14 +19,16 @@ public class BuyerDashboardView {
     private FlowPane booksGrid;
     private TextField searchField;
     private HBox categoryNavBar;
-    private ComboBox<String> categoryCombo;
     private ComboBox<String> sortCombo;
-    private ComboBox<Integer> pageSizeCombo;
     private HBox paginationFooter;
-    
+
     private int currentPage = 1;
     private int pageSize = 10;
     private List<Book> cachedBooks = new java.util.ArrayList<>();
+    // Categoría seleccionada — campo propio para no depender del ComboBox
+    private String selectedCategory = "Todas";
+    // Cache de categorías para no llamar al API en cada clic
+    private List<String> cachedCategories = null;
 
     public Scene buildScene() {
         BorderPane root = new BorderPane();
@@ -43,11 +45,6 @@ public class BuyerDashboardView {
         searchField.setOnAction(e -> applyFilters());
 
         // Category nav bar below header
-        categoryCombo = new ComboBox<>();
-        categoryCombo.setValue("Todas");
-        categoryCombo.setVisible(false);
-        categoryCombo.setManaged(false);
-
         categoryNavBar = buildCategoryNav();
 
         VBox topSection = new VBox(0);
@@ -63,12 +60,12 @@ public class BuyerDashboardView {
     }
 
     private HBox buildCategoryNav() {
-        List<String> categories = controller.getCategories();
-        categoryCombo.getItems().setAll(categories);
-        String currentCat = categoryCombo.getValue() == null ? "Todas" : categoryCombo.getValue();
-
-        return ViewHelper.buildCategoryNavBar(categories, currentCat, cat -> {
-            categoryCombo.setValue(cat);
+        // Carga categorías solo una vez y las reutiliza
+        if (cachedCategories == null) {
+            cachedCategories = controller.getCategories();
+        }
+        return ViewHelper.buildCategoryNavBar(cachedCategories, selectedCategory, cat -> {
+            selectedCategory = cat;   // Guarda la selección en campo propio
             applyFilters();
         });
     }
@@ -97,7 +94,7 @@ public class BuyerDashboardView {
         sortCombo.setPrefWidth(160);
         sortCombo.setOnAction(e -> applyFilters());
 
-        controlBar.getChildren().addAll(resultsTitle, spacer, sortLabel, sortCombo, categoryCombo);
+        controlBar.getChildren().addAll(resultsTitle, spacer, sortLabel, sortCombo);
 
         // Books grid
         booksGrid = new FlowPane();
@@ -123,7 +120,7 @@ public class BuyerDashboardView {
 
     private void applyFilters() {
         currentPage = 1;
-        // Refresh category nav
+        // Reconstruye la nav bar solo para actualizar el chip activo
         VBox topSection = (VBox) categoryNavBar.getParent();
         if (topSection != null) {
             int idx = topSection.getChildren().indexOf(categoryNavBar);
@@ -132,7 +129,7 @@ public class BuyerDashboardView {
                 topSection.getChildren().set(idx, categoryNavBar);
             }
         }
-        refreshBooks(searchField.getText(), categoryCombo.getValue());
+        refreshBooks(searchField.getText(), selectedCategory);
     }
 
     private void refreshBooks(String query, String category) {
@@ -224,8 +221,8 @@ public class BuyerDashboardView {
 
         Label sizeLbl = new Label("Por página:");
         sizeLbl.getStyleClass().add("results-counter");
-        
-        pageSizeCombo = new ComboBox<>();
+
+        ComboBox<Integer> pageSizeCombo = new ComboBox<>();
         pageSizeCombo.getItems().addAll(5, 10, 20, 30);
         pageSizeCombo.setValue(pageSize);
         pageSizeCombo.getStyleClass().add("combo-field");
@@ -237,9 +234,9 @@ public class BuyerDashboardView {
         });
 
         paginationFooter.getChildren().addAll(
-                resultsLbl, ViewHelper.spacer(), 
-                btnPrev, pageInfo, btnNext, 
-                ViewHelper.spacer(), 
+                resultsLbl, ViewHelper.spacer(),
+                btnPrev, pageInfo, btnNext,
+                ViewHelper.spacer(),
                 sizeLbl, pageSizeCombo
         );
     }
@@ -250,10 +247,13 @@ public class BuyerDashboardView {
         DialogPane pane = dialog.getDialogPane();
         pane.getStylesheets().add(ViewHelper.CSS_PATH);
         pane.getStyleClass().add("pane-root");
-        
-        HBox content = new HBox(30);
-        content.setPadding(new Insets(30));
-        content.setPrefWidth(700);
+
+        VBox mainContent = new VBox(24);
+        mainContent.setPadding(new Insets(30));
+        mainContent.setPrefWidth(740);
+
+        // ---- Parte superior: portada + info ----
+        HBox topContent = new HBox(30);
 
         StackPane cover = ViewHelper.bookCover(book.getCoverColor(), book.getTitle(), true);
         cover.setScaleX(1.5);
@@ -272,7 +272,7 @@ public class BuyerDashboardView {
         Label author = new Label("Autor: " + book.getAuthor());
         author.getStyleClass().add("label-h2");
 
-        Label desc = new Label(book.getDescription() != null ? book.getDescription() 
+        Label desc = new Label(book.getDescription() != null ? book.getDescription()
                 : "Material educativo de alta calidad disponible para descarga inmediata.");
         desc.getStyleClass().add("label-body");
         desc.setWrapText(true);
@@ -291,9 +291,77 @@ public class BuyerDashboardView {
         });
 
         info.getChildren().addAll(title, author, desc, isbn, ViewHelper.vSpacer(), addBtn);
-        content.getChildren().addAll(coverWrapper, info);
+        topContent.getChildren().addAll(coverWrapper, info);
 
-        pane.setContent(content);
+        mainContent.getChildren().add(topContent);
+
+        // ---- Parte inferior: libros relacionados ----
+        List<Book> related = controller.getRelatedBooks(book, 4);
+        if (!related.isEmpty()) {
+            Separator sep = new Separator();
+            sep.getStyleClass().add("separator-light");
+
+            Label relTitle = new Label("📚 Libros relacionados");
+            relTitle.getStyleClass().add("label-title");
+
+            HBox relatedRow = new HBox(16);
+            relatedRow.setAlignment(Pos.CENTER_LEFT);
+
+            for (Book rel : related) {
+                VBox miniCard = new VBox(8);
+                miniCard.setAlignment(Pos.TOP_CENTER);
+                miniCard.setStyle("-fx-background-color: #f5f0ea; -fx-background-radius: 10; " +
+                        "-fx-padding: 12; -fx-pref-width: 140; -fx-cursor: hand;");
+
+                StackPane miniCover = ViewHelper.bookCover(rel.getCoverColor(), rel.getTitle(), false);
+                miniCover.setScaleX(0.85);
+                miniCover.setScaleY(0.85);
+
+                Label miniTitle = new Label(rel.getTitle());
+                miniTitle.getStyleClass().add("product-title");
+                miniTitle.setWrapText(true);
+                miniTitle.setMaxWidth(120);
+                miniTitle.setStyle("-fx-font-size: 11px;");
+
+                Label miniAuthor = new Label(rel.getAuthor());
+                miniAuthor.getStyleClass().add("product-author");
+                miniAuthor.setStyle("-fx-font-size: 10px;");
+                miniAuthor.setWrapText(true);
+                miniAuthor.setMaxWidth(120);
+
+                Button miniBtn = new Button("Ver");
+                miniBtn.getStyleClass().add("btn-secondary");
+                miniBtn.setMaxWidth(Double.MAX_VALUE);
+                miniBtn.setOnAction(ev -> {
+                    dialog.close();
+                    showBookDetail(rel);
+                });
+
+                miniCard.getChildren().addAll(miniCover, miniTitle, miniAuthor, miniBtn);
+                relatedRow.getChildren().add(miniCard);
+            }
+
+            ScrollPane relScroll = new ScrollPane(relatedRow);
+            relScroll.setFitToHeight(true);
+            relScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            relScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            relScroll.getStyleClass().add("scroll-pane-transparent");
+            relScroll.setPrefHeight(220);
+
+            Label countLabel = new Label("Mostrando " + related.size() + " de los libros más relacionados");
+            countLabel.getStyleClass().add("label-small");
+            countLabel.setStyle("-fx-text-fill: #999; -fx-font-style: italic;");
+
+            mainContent.getChildren().addAll(sep, relTitle, relScroll, countLabel);
+        }
+
+        ScrollPane outerScroll = new ScrollPane(mainContent);
+        outerScroll.setFitToWidth(true);
+        outerScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        outerScroll.getStyleClass().add("scroll-pane-transparent");
+        outerScroll.setPrefHeight(600);
+
+        pane.setContent(outerScroll);
         pane.getButtonTypes().add(ButtonType.CLOSE);
         dialog.showAndWait();
     }
