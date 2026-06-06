@@ -19,14 +19,16 @@ public class BuyerDashboardView {
     private FlowPane booksGrid;
     private TextField searchField;
     private HBox categoryNavBar;
-    private ComboBox<String> categoryCombo;
     private ComboBox<String> sortCombo;
-    private ComboBox<Integer> pageSizeCombo;
     private HBox paginationFooter;
-    
+
     private int currentPage = 1;
     private int pageSize = 10;
     private List<Book> cachedBooks = new java.util.ArrayList<>();
+    // Categoría seleccionada — campo propio para no depender del ComboBox
+    private String selectedCategory = "Todas";
+    // Cache de categorías para no llamar al API en cada clic
+    private List<String> cachedCategories = null;
 
     public Scene buildScene() {
         BorderPane root = new BorderPane();
@@ -43,11 +45,6 @@ public class BuyerDashboardView {
         searchField.setOnAction(e -> applyFilters());
 
         // Category nav bar below header
-        categoryCombo = new ComboBox<>();
-        categoryCombo.setValue("Todas");
-        categoryCombo.setVisible(false);
-        categoryCombo.setManaged(false);
-
         categoryNavBar = buildCategoryNav();
 
         VBox topSection = new VBox(0);
@@ -63,12 +60,12 @@ public class BuyerDashboardView {
     }
 
     private HBox buildCategoryNav() {
-        List<String> categories = controller.getCategories();
-        categoryCombo.getItems().setAll(categories);
-        String currentCat = categoryCombo.getValue() == null ? "Todas" : categoryCombo.getValue();
-
-        return ViewHelper.buildCategoryNavBar(categories, currentCat, cat -> {
-            categoryCombo.setValue(cat);
+        // Carga categorías solo una vez y las reutiliza
+        if (cachedCategories == null) {
+            cachedCategories = controller.getCategories();
+        }
+        return ViewHelper.buildCategoryNavBar(cachedCategories, selectedCategory, cat -> {
+            selectedCategory = cat;   // Guarda la selección en campo propio
             applyFilters();
         });
     }
@@ -97,7 +94,7 @@ public class BuyerDashboardView {
         sortCombo.setPrefWidth(160);
         sortCombo.setOnAction(e -> applyFilters());
 
-        controlBar.getChildren().addAll(resultsTitle, spacer, sortLabel, sortCombo, categoryCombo);
+        controlBar.getChildren().addAll(resultsTitle, spacer, sortLabel, sortCombo);
 
         // Books grid
         booksGrid = new FlowPane();
@@ -123,7 +120,7 @@ public class BuyerDashboardView {
 
     private void applyFilters() {
         currentPage = 1;
-        // Refresh category nav
+        // Reconstruye la nav bar solo para actualizar el chip activo
         VBox topSection = (VBox) categoryNavBar.getParent();
         if (topSection != null) {
             int idx = topSection.getChildren().indexOf(categoryNavBar);
@@ -132,7 +129,7 @@ public class BuyerDashboardView {
                 topSection.getChildren().set(idx, categoryNavBar);
             }
         }
-        refreshBooks(searchField.getText(), categoryCombo.getValue());
+        refreshBooks(searchField.getText(), selectedCategory);
     }
 
     private void refreshBooks(String query, String category) {
