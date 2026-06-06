@@ -26,16 +26,20 @@ public class DataInitializer {
                 "The Pragmatic Programmer", "Introduction to Algorithms", "Artificial Intelligence: A Modern Approach",
                 "Cracking the Coding Interview", "The Mythical Man-Month", "Refactoring",
                 "Code Complete", "Test Driven Development", "Domain-Driven Design",
-                "Effective Java", "Java Concurrency in Practice", "Patterns of Enterprise Application Architecture"
+                "Effective Java", "Java Concurrency in Practice", "Patterns of Enterprise Application Architecture",
+                "Cien años de soledad", "1984", "El principito", "Ficciones",
+                "Orgullo y prejuicio", "Crimen y castigo", "La Odisea", "Hamlet"
             };
             String[] authors = {
                 "Miguel de Cervantes", "Robert C. Martin", "Gang of Four",
                 "Andrew Hunt", "Thomas H. Cormen", "Stuart Russell",
                 "Gayle Laakmann", "Fred Brooks", "Martin Fowler",
                 "Steve McConnell", "Kent Beck", "Eric Evans",
-                "Joshua Bloch", "Brian Goetz", "Martin Fowler"
+                "Joshua Bloch", "Brian Goetz", "Martin Fowler",
+                "Gabriel García Márquez", "George Orwell", "Antoine de Saint-Exupéry", "Jorge Luis Borges",
+                "Jane Austen", "Fiódor Dostoyevski", "Homero", "William Shakespeare"
             };
-            // 5 categorías generales: Literatura | Ingeniería de Software | Ciencias | Matemáticas | Gestión
+            // Categorías generales: Literatura | Ingeniería de Software | Ciencias | Matemáticas | Gestión
             String[] categories = {
                 "Literatura",                         // Don Quijote
                 "Ingeniería de Software",             // Clean Code
@@ -51,12 +55,22 @@ public class DataInitializer {
                 "Ingeniería de Software",             // Domain-Driven Design
                 "Ingeniería de Software",             // Effective Java
                 "Ingeniería de Software",             // Java Concurrency
-                "Ingeniería de Software"              // Patterns of Enterprise Application Architecture
+                "Ingeniería de Software",             // Patterns of Enterprise Application Architecture
+                "Literatura",                         // Cien años de soledad
+                "Literatura",                         // 1984
+                "Literatura",                         // El principito
+                "Literatura",                         // Ficciones
+                "Literatura",                         // Orgullo y prejuicio
+                "Literatura",                         // Crimen y castigo
+                "Literatura",                         // La Odisea
+                "Literatura"                          // Hamlet
             };
             String[] colors = {
                 "#2F5D62", "#C97B63", "#2D6A4F", "#1A3C5E", "#7B2D8B",
                 "#B5451B", "#C9882A", "#1E6B6B", "#5C2D91", "#1A3A1A",
-                "#3D405B", "#81B29A", "#F2CC8F", "#E07A5F", "#3D405B"
+                "#3D405B", "#81B29A", "#F2CC8F", "#E07A5F", "#3D405B",
+                "#8E24AA", "#3949AB", "#00ACC1", "#43A047", "#D81B60",
+                "#5D4037", "#00897B", "#FB8C00", "#E53935"
             };
 
             for (int i = 0; i < titles.length; i++) {
