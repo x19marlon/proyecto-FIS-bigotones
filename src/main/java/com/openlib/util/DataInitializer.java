@@ -14,7 +14,13 @@ public class DataInitializer {
     @Bean
     CommandLineRunner initDatabase(BookRepository bookRepository, UserRepository userRepository) {
         return args -> {
-            // Seed Books with more realistic data
+            // Solo hacer seed si la base de datos está vacía
+            if (bookRepository.count() > 0) {
+                System.out.println("[DataInitializer] La BD ya contiene datos, omitiendo seed.");
+                return;
+            }
+            System.out.println("[DataInitializer] BD vacía — insertando datos iniciales...");
+
             String[] titles = {
                 "Don Quijote de la Mancha", "Clean Code", "Design Patterns",
                 "The Pragmatic Programmer", "Introduction to Algorithms", "Artificial Intelligence: A Modern Approach",
@@ -36,6 +42,11 @@ public class DataInitializer {
                 "Software, Construcción, Calidad", "Software, TDD, Agile", "Software, DDD, Arquitectura",
                 "Software, Java, Backend", "Software, Java, Concurrencia", "Software, Arquitectura, Enterprise"
             };
+            String[] colors = {
+                "#2F5D62", "#C97B63", "#2D6A4F", "#1A3C5E", "#7B2D8B",
+                "#B5451B", "#C9882A", "#1E6B6B", "#5C2D91", "#1A3A1A",
+                "#3D405B", "#81B29A", "#F2CC8F", "#E07A5F", "#3D405B"
+            };
 
             for (int i = 0; i < titles.length; i++) {
                 bookRepository.save(Book.builder()
@@ -46,7 +57,7 @@ public class DataInitializer {
                         .description("Obra maestra del conocimiento: " + titles[i])
                         .price(25.0 + i)
                         .status("APROBADO")
-                        .coverColor(i % 2 == 0 ? "#2F5D62" : "#C97B63")
+                        .coverColor(colors[i % colors.length])
                         .build());
             }
 
@@ -59,21 +70,33 @@ public class DataInitializer {
                     .build());
 
             // Seed Users
-            userRepository.save(User.builder()
-                    .id(1L)
-                    .name("Admin OpenLib")
-                    .email("admin@openlib.com")
-                    .password("admin123")
-                    .role("ADMIN")
-                    .build());
+            if (userRepository.count() == 0) {
+                userRepository.save(User.builder()
+                        .name("Admin OpenLib")
+                        .email("admin@openlib.com")
+                        .password("admin123")
+                        .role("ADMIN")
+                        .address("Oficina Central, Edificio Principal")
+                        .build());
 
-            userRepository.save(User.builder()
-                    .id(2L)
-                    .name("a")
-                    .email("a@test.co")
-                    .password("000000")
-                    .role("BUYER")
-                    .build());
+                userRepository.save(User.builder()
+                        .name("a")
+                        .email("a@test.co")
+                        .password("000000")
+                        .role("BUYER")
+                        .address("Campus Norte, Facultad de Ingeniería")
+                        .build());
+
+                userRepository.save(User.builder()
+                        .name("Carlos Ramírez")
+                        .email("carlos@openlib.edu.co")
+                        .password("buyer123")
+                        .role("BUYER")
+                        .address("Campus Central, Edificio de Biblioteca")
+                        .build());
+            }
+
+            System.out.println("[DataInitializer] Seed completado.");
         };
     }
 }

@@ -250,10 +250,13 @@ public class BuyerDashboardView {
         DialogPane pane = dialog.getDialogPane();
         pane.getStylesheets().add(ViewHelper.CSS_PATH);
         pane.getStyleClass().add("pane-root");
-        
-        HBox content = new HBox(30);
-        content.setPadding(new Insets(30));
-        content.setPrefWidth(700);
+
+        VBox mainContent = new VBox(24);
+        mainContent.setPadding(new Insets(30));
+        mainContent.setPrefWidth(740);
+
+        // ---- Parte superior: portada + info ----
+        HBox topContent = new HBox(30);
 
         StackPane cover = ViewHelper.bookCover(book.getCoverColor(), book.getTitle(), true);
         cover.setScaleX(1.5);
@@ -272,7 +275,7 @@ public class BuyerDashboardView {
         Label author = new Label("Autor: " + book.getAuthor());
         author.getStyleClass().add("label-h2");
 
-        Label desc = new Label(book.getDescription() != null ? book.getDescription() 
+        Label desc = new Label(book.getDescription() != null ? book.getDescription()
                 : "Material educativo de alta calidad disponible para descarga inmediata.");
         desc.getStyleClass().add("label-body");
         desc.setWrapText(true);
@@ -291,9 +294,77 @@ public class BuyerDashboardView {
         });
 
         info.getChildren().addAll(title, author, desc, isbn, ViewHelper.vSpacer(), addBtn);
-        content.getChildren().addAll(coverWrapper, info);
+        topContent.getChildren().addAll(coverWrapper, info);
 
-        pane.setContent(content);
+        mainContent.getChildren().add(topContent);
+
+        // ---- Parte inferior: libros relacionados ----
+        List<Book> related = controller.getRelatedBooks(book, 4);
+        if (!related.isEmpty()) {
+            Separator sep = new Separator();
+            sep.getStyleClass().add("separator-light");
+
+            Label relTitle = new Label("📚 Libros relacionados");
+            relTitle.getStyleClass().add("label-title");
+
+            HBox relatedRow = new HBox(16);
+            relatedRow.setAlignment(Pos.CENTER_LEFT);
+
+            for (Book rel : related) {
+                VBox miniCard = new VBox(8);
+                miniCard.setAlignment(Pos.TOP_CENTER);
+                miniCard.setStyle("-fx-background-color: #f5f0ea; -fx-background-radius: 10; " +
+                        "-fx-padding: 12; -fx-pref-width: 140; -fx-cursor: hand;");
+
+                StackPane miniCover = ViewHelper.bookCover(rel.getCoverColor(), rel.getTitle(), false);
+                miniCover.setScaleX(0.85);
+                miniCover.setScaleY(0.85);
+
+                Label miniTitle = new Label(rel.getTitle());
+                miniTitle.getStyleClass().add("product-title");
+                miniTitle.setWrapText(true);
+                miniTitle.setMaxWidth(120);
+                miniTitle.setStyle("-fx-font-size: 11px;");
+
+                Label miniAuthor = new Label(rel.getAuthor());
+                miniAuthor.getStyleClass().add("product-author");
+                miniAuthor.setStyle("-fx-font-size: 10px;");
+                miniAuthor.setWrapText(true);
+                miniAuthor.setMaxWidth(120);
+
+                Button miniBtn = new Button("Ver");
+                miniBtn.getStyleClass().add("btn-secondary");
+                miniBtn.setMaxWidth(Double.MAX_VALUE);
+                miniBtn.setOnAction(ev -> {
+                    dialog.close();
+                    showBookDetail(rel);
+                });
+
+                miniCard.getChildren().addAll(miniCover, miniTitle, miniAuthor, miniBtn);
+                relatedRow.getChildren().add(miniCard);
+            }
+
+            ScrollPane relScroll = new ScrollPane(relatedRow);
+            relScroll.setFitToHeight(true);
+            relScroll.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+            relScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+            relScroll.getStyleClass().add("scroll-pane-transparent");
+            relScroll.setPrefHeight(220);
+
+            Label countLabel = new Label("Mostrando " + related.size() + " de los libros más relacionados");
+            countLabel.getStyleClass().add("label-small");
+            countLabel.setStyle("-fx-text-fill: #999; -fx-font-style: italic;");
+
+            mainContent.getChildren().addAll(sep, relTitle, relScroll, countLabel);
+        }
+
+        ScrollPane outerScroll = new ScrollPane(mainContent);
+        outerScroll.setFitToWidth(true);
+        outerScroll.setVbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        outerScroll.getStyleClass().add("scroll-pane-transparent");
+        outerScroll.setPrefHeight(600);
+
+        pane.setContent(outerScroll);
         pane.getButtonTypes().add(ButtonType.CLOSE);
         dialog.showAndWait();
     }

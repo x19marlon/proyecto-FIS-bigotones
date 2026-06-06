@@ -23,7 +23,7 @@ public class ApiClient {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
         
         if (response.statusCode() >= 400) {
-            throw new RuntimeException("API Error: " + response.body());
+            throw new RuntimeException("API Error " + response.statusCode() + ": " + response.body());
         }
         
         return mapper.readValue(response.body(), responseType);
@@ -38,9 +38,26 @@ public class ApiClient {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() >= 400) {
-            throw new RuntimeException("API Error: " + response.body());
+            throw new RuntimeException("API Error " + response.statusCode() + ": " + response.body());
         }
 
         return mapper.readValue(response.body(), responseType);
     }
+
+    /** DELETE request — devuelve true si el servidor respondió con 2xx */
+    public static boolean delete(String path) throws Exception {
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + path))
+                .DELETE()
+                .build();
+
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        return response.statusCode() >= 200 && response.statusCode() < 300;
+    }
+
+    /** GET con query string ya formada, ej. "/books/search?q=java&cat=Software" */
+    public static <T> T getWithQuery(String pathAndQuery, Class<T> responseType) throws Exception {
+        return get(pathAndQuery, responseType);
+    }
 }
+

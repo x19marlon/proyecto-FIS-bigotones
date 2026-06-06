@@ -3,53 +3,119 @@ package com.openlib.controller;
 import com.openlib.model.Book;
 import com.openlib.model.Order;
 import com.openlib.model.User;
+import com.openlib.util.ApiClient;
 import com.openlib.util.DataStore;
 import com.openlib.util.SceneManager;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class AdminController {
 
     private final DataStore store = DataStore.getInstance();
 
     // ---- Stats ----
-    public int getTotalUsers()  { return store.getTotalUsers(); }
-    public int getTotalBooks()  { return store.getTotalBooks(); }
-    public int getTotalOrders() { return store.getTotalOrders(); }
-    public Book getMostDownloaded() { return store.getMostDownloadedBook(); }
+    public int getTotalUsers() {
+        try {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> stats = ApiClient.get("/users/stats", Map.class);
+            Object val = stats.get("totalBuyers");
+            return val instanceof Number ? ((Number) val).intValue() : 0;
+        } catch (Exception e) {
+            return 0;
+        }
+    }
+
+    public int getTotalBooks() {
+        return getAllBooks().size();
+    }
+
+    public int getTotalOrders() {
+        return getAllOrders().size();
+    }
+
+    public Book getMostDownloaded() {
+        return getAllBooks().stream()
+                .max(java.util.Comparator.comparingInt(Book::getDownloads))
+                .orElse(null);
+    }
 
     // ---- Books ----
-    public List<Book> getAllBooks() { return store.getAllBooks(); }
+    public List<Book> getAllBooks() {
+        try {
+            Book[] books = ApiClient.get("/books/all", Book[].class);
+            return Arrays.asList(books);
+        } catch (Exception e) {
+            System.err.println("[AdminController] Error obteniendo libros: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
 
     public String addBook(String title, String author, String isbn,
                           String category, String description) {
         if (title == null || title.isBlank()) return "El título es requerido.";
         if (author == null || author.isBlank()) return "El autor es requerido.";
 
-        String[] colors = {"#2D6A4F","#1A3C5E","#7B2D8B","#B5451B","#C9882A","#1E6B6B","#5C2D91","#1A3A1A"};
-        String color = colors[(int)(Math.random() * colors.length)];
-
-        Book book = new Book(0, title.trim(), author.trim(),
-                isbn == null ? "N/A" : isbn.trim(),
-                category == null ? "" : category.trim(),
-                description == null ? "" : description.trim(),
-                0.0, 0.0, 0, color);
-        store.addBook(book);
-        return null;
+        try {
+            Map<String, String> body = Map.of(
+                    "title",       title.trim(),
+                    "author",      author.trim(),
+                    "isbn",        isbn == null ? "N/A" : isbn.trim(),
+                    "category",    category == null ? "Sin categoría" : category.trim(),
+                    "description", description == null ? "" : description.trim()
+            );
+            ApiClient.post("/books", body, Book.class);
+            return null;
+        } catch (Exception e) {
+            return "Error al guardar el libro: " + e.getMessage();
+        }
     }
 
     public boolean deleteBook(Long bookId) {
-        return store.deleteBook(bookId);
+        try {
+            return ApiClient.delete("/books/" + bookId);
+        } catch (Exception e) {
+            System.err.println("[AdminController] Error eliminando libro: " + e.getMessage());
+            return false;
+        }
     }
 
     // ---- Users ----
-    public List<User> getAllUsers() { return store.getAllUsers(); }
-    public boolean deleteUser(Long userId) { return store.deleteUser(userId); }
+    public List<User> getAllUsers() {
+        try {
+            User[] users = ApiClient.get("/users", User[].class);
+            return Arrays.asList(users);
+        } catch (Exception e) {
+            System.err.println("[AdminController] Error obteniendo usuarios: " + e.getMessage());
+            return Collections.emptyList();
+        }
+    }
+
+    public boolean deleteUser(Long userId) {
+        try {
+            return ApiClient.delete("/users/" + userId);
+        } catch (Exception e) {
+            System.err.println("[AdminController] Error eliminando usuario: " + e.getMessage());
+            return false;
+        }
+    }
 
     // ---- Orders ----
-    public List<Order> getAllOrders() { return store.getAllOrders(); }
+    public List<Order> getAllOrders() {
+        try {
+            // Reutilizamos el OrderController existente — no hay endpoint "all orders" aún,
+            // así que lo llamamos a través del usuario actual o usamos la lista local.
+            // TODO: agregar GET /api/orders si se requiere en el futuro.
+            return store.getAllOrders();
+        } catch (Exception e) {
+            return Collections.emptyList();
+        }
+    }
+
     public void advanceOrder(Long id) { store.advanceOrder(id); }
-    public void cancelOrder(Long id) { store.cancelOrder(id); }
+    public void cancelOrder(Long id)  { store.cancelOrder(id); }
 
     // ---- Navigation ----
     public Long getCurrentUserId() {
